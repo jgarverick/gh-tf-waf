@@ -8,7 +8,8 @@
 		"ghcr.io/devcontainers/features/terraform:1": {},
 		"ghcr.io/prulloac/devcontainer-features/pre-commit:1": {},
 		"ghcr.io/devcontainers-extra/features/checkov:1": {},
-		"ghcr.io/dhoeric/features/terraform-docs": {}
+		"ghcr.io/dhoeric/features/terraform-docs": {},
+		"ghcr.io/devcontainers/features/github-cli": {}
 	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
@@ -23,7 +24,7 @@
 	// }
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "source ./.devcontainer/aliases.sh"
+	"postCreateCommand": "bash ./.devcontainer/setup.sh"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
