@@ -3,3 +3,8 @@ Incorporate best practices from:
 - [Migrations](https://wellarchitected.github.com/library/scenarios/migrations/)
 - [Monorepos](https://wellarchitected.github.com/library/scenarios/monorepos/)
 - [GitHub Well-Architected Layers](https://wellarchitected.github.com/library/overview/layers/)
+  - [Productivity](https://wellarchitected.github.com/library/productivity/checklist/)
+  - [Collaboration](https://wellarchitected.github.com/library/collaboration/checklist/)
+  - [Application Security](https://wellarchitected.github.com/library/application-security/checklist/)
+  - [Governance](https://wellarchitected.github.com/library/governance/checklist/)
+  - [Architecture](https://wellarchitected.github.com/library/architecture/checklist/)

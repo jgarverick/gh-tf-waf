@@ -1,0 +1,23 @@
+# Discussion categories configuration
+categories:
+  - name: Announcements
+    description: Important updates from maintainers
+    emoji: 📢
+  - name: General
+    description: General discussion about this project
+    emoji: 💬
+  - name: Ideas
+    description: Ideas for improving the project
+    emoji: 💡
+  - name: Help
+    description: Questions and help requests
+    emoji: ❓
+  - name: Show and Tell
+    description: Share what you've built with the project
+    emoji: 🎉
+  - name: Architecture
+    description: Discussions about architectural decisions
+    emoji: 🏗️
+  - name: Security
+    description: Security-related discussions
+    emoji: 🔒

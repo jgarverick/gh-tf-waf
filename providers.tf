@@ -9,6 +9,17 @@ terraform {
 }
 
 provider "github" {
-  token = env("GITHUB_TOKEN")
-  owner = env("GITHUB_OWNER")
+  token = var.github_token
+  owner = var.github_organization
+}
+
+variable "github_token" {
+  type        = string
+  description = "GitHub personal access token"
+  sensitive   = true
+}
+
+variable "github_organization" {
+  type        = string
+  description = "GitHub organization name"
 }

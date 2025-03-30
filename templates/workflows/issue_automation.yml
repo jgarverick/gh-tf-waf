@@ -1,0 +1,82 @@
+name: Issue Automation
+
+on:
+  issues:
+    types: [labeled, unlabeled, opened, edited, closed, reopened]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    steps:
+      - name: Initial triage
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Add default labels based on title patterns
+            const title = context.payload.issue.title.toLowerCase();
+            const body = context.payload.issue.body.toLowerCase();
+
+            // Auto-label based on content
+            if (title.includes('bug') || title.includes('fix')) {
+              github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: ['type:bug']
+              })
+            }
+
+            // Label security issues
+            if (title.includes('security') ||
+                title.includes('vulnerability') ||
+                body.includes('security') ||
+                body.includes('vulnerability')) {
+              github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: ['type:security', 'waf:security']
+              })
+            }
+
+            // Auto-assign to project board
+            github.rest.projects.createCard({
+              column_id: process.env.PROJECT_COLUMN_ID,
+              content_id: context.payload.issue.id,
+              content_type: 'Issue'
+            });
+        env:
+          PROJECT_COLUMN_ID: ${{ secrets.PROJECT_COLUMN_ID }}
+
+  automate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if issue is labeled with "type:bug"
+        if: contains(github.event.issue.labels.*.name, 'type:bug')
+        run: |
+          echo "This issue is a bug."
+          # Add logic to assign to specific team/person, add to project, etc.
+          gh issue edit $GITHUB_ISSUE_NUMBER --add-assignees bug-squad
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ISSUE_NUMBER: ${{ github.event.issue.number }}
+
+      - name: Check if issue is labeled with "type:feature"
+        if: contains(github.event.issue.labels.*.name, 'type:feature')
+        run: |
+          echo "This issue is a feature request."
+          # Add logic to assign to product team, add to roadmap project, etc.
+          gh issue edit $GITHUB_ISSUE_NUMBER --add-assignees product-team
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ISSUE_NUMBER: ${{ github.event.issue.number }}
+
+      - name: Close stale issues
+        if: github.event.action == 'labeled' && github.event.label.name == 'status:blocked'
+        run: |
+          echo "Closing blocked issue."
+          gh issue close $GITHUB_ISSUE_NUMBER
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ISSUE_NUMBER: ${{ github.event.issue.number }}

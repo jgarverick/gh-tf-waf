@@ -1,0 +1,25 @@
+name: Project Automation
+
+on:
+  issues:
+    types: [opened, closed, reopened, labeled, unlabeled]
+  pull_request:
+    types: [opened, closed, reopened, labeled, unlabeled]
+
+jobs:
+  project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add to project board
+        uses: actions/add-to-project@v1
+        with:
+          project-url: https://github.com/orgs/{org}/projects/{project_number}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          labeled: "status:in-progress"
+          label-config: |
+            status:in-progress:
+              - column-name: In Progress
+            status:done:
+              - column-name: Done
+            status:review:
+              - column-name: In Review
