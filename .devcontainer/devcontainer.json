@@ -9,7 +9,8 @@
 		"ghcr.io/prulloac/devcontainer-features/pre-commit:1": {},
 		"ghcr.io/devcontainers-extra/features/checkov:1": {},
 		"ghcr.io/dhoeric/features/terraform-docs": {},
-		"ghcr.io/devcontainers/features/github-cli": {}
+		"ghcr.io/devcontainers/features/github-cli": {},
+		"ghcr.io/roul/devcontainer-features/mise-golang": {}
 	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
@@ -24,7 +25,14 @@
 	// }
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "bash ./.devcontainer/setup.sh"
+	"postCreateCommand": "bash ./.devcontainer/setup.sh",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"golang.go"
+			]
+		}
+	}
 
 	// Configure tool-specific properties.
 	// "customizations": {},
