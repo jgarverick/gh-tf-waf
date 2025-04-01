@@ -2,20 +2,13 @@
 
 # Organization-wide settings for governance
 # Addresses anti-pattern: Uncontrolled repository creation and poor visibility
-resource "github_organization_settings" "waf_governance" {
-  # Security layer: Ensure proper verification and minimize exposure
-  members_can_create_public_pages       = false
-  members_can_fork_private_repositories = false
-  web_commit_signoff_required           = true
-  billing_email                         = var.billing_email
-
-  # Operational excellence layer: Standardize repository creation
-  members_can_create_repositories          = false
-  members_can_create_public_repositories   = false
-  members_can_create_private_repositories  = false
-  members_can_create_internal_repositories = true
-
-  # Security layer: Enable advanced security features by default
+module "governance_settings" {
+  source                                                       = "../modules/org"
+  billing_email                                                = var.billing_email
+  members_can_create_repositories                              = false
+  members_can_create_public_repositories                       = false
+  members_can_create_private_repositories                      = false
+  members_can_create_internal_repositories                     = true
   dependabot_alerts_enabled_for_new_repositories               = true
   dependabot_security_updates_enabled_for_new_repositories     = true
   dependency_graph_enabled_for_new_repositories                = true

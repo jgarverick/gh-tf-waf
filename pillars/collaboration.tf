@@ -1,19 +1,19 @@
 # GitHub Well-Architected Framework - Collaboration Pillar
 
 locals {
-  # Define file paths for templates - centralized management
+  # Ensure all templates are referenced from the `templates/` directory
   template_files = {
-    bug_report         = "${path.module}/../templates/bug_report.md"
-    feature_request    = "${path.module}/../templates/feature_request.md"
-    monorepo_change    = "${path.module}/../templates/monorepo_change.md"
-    pr_template        = "${path.module}/../templates/pull_request_template.md"
-    discussion_config  = "${path.module}/../templates/discussion_categories.yml"
-    issue_automation   = "${path.module}/../templates/workflows/issue_automation.yml"
-    project_automation = "${path.module}/../templates/workflows/project_automation.yml"
-    stale_issues       = "${path.module}/../templates/workflows/stale_issues.yml"
-    cross_repo         = "${path.module}/../templates/workflows/cross_repo_visibility.yml"
-    team_meeting       = "${path.module}/../templates/meeting_template.md"
-    release_template   = "${path.module}/../templates/release_template.md"
+    bug_report         = "../templates/bug_report.md"
+    feature_request    = "../templates/feature_request.md"
+    monorepo_change    = "../templates/monorepo_change.md"
+    pr_template        = "../templates/pull_request_template.md"
+    discussion_config  = "../templates/discussion_categories.yml"
+    issue_automation   = "../templates/workflows/issue_automation.yml"
+    project_automation = "../templates/workflows/project_automation.yml"
+    stale_issues       = "../templates/workflows/stale_issues.yml"
+    cross_repo         = "../templates/workflows/cross_repo_visibility.yml"
+    team_meeting       = "../templates/meeting_template.md"
+    release_template   = "../templates/release_template.md"
   }
 }
 

@@ -111,12 +111,11 @@ resource "github_branch_protection" "architecture_branch_protection" {
 # Define GitHub Actions workflows for CI/CD
 # Addresses anti-pattern: Manual deployments
 resource "github_repository_file" "ci_cd_workflow" {
-  for_each = github_repository.architecture_components
-
+  for_each            = github_repository.architecture_components
   repository          = each.value.name
   branch              = "main"
-  file                = ".github/workflows/ci-cd.yml"
-  content             = file("${path.module}/../templates/workflows/ci-cd.yml")
+  file                = "../templates/workflows/ci-cd.yml"
+  content             = file("../templates/workflows/ci-cd.yml")
   commit_message      = "Add CI/CD workflow via Terraform"
   commit_author       = "GitHub WAF"
   commit_email        = "waf@example.com"
