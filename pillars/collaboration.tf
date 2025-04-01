@@ -83,7 +83,7 @@ resource "github_repository_file" "discussion_categories" {
 # Cross-repository labels for consistent tagging
 # Addresses anti-pattern: Inconsistent labeling across repositories
 resource "github_issue_labels" "priority_labels" {
-  repository = ""
+  repository = "compliance-template"
   for_each = {
     "priority:critical" = "FF0000" # Red
     "priority:high"     = "FFA500" # Orange
@@ -99,7 +99,7 @@ resource "github_issue_labels" "priority_labels" {
 }
 
 resource "github_issue_labels" "type_labels" {
-  repository = ""
+  repository = "compliance-template"
   for_each = {
     "type:feature"     = "0000FF" # Blue
     "type:bug"         = "FF00FF" # Magenta
@@ -117,7 +117,7 @@ resource "github_issue_labels" "type_labels" {
 
 # WAF-specific labels to aid in well-architected improvement tracking
 resource "github_issue_labels" "waf_labels" {
-  repository = ""
+  repository = "compliance-template"
   for_each = {
     "waf:security"      = "B60205" # Dark red
     "waf:governance"    = "1D76DB" # Blue
@@ -135,7 +135,7 @@ resource "github_issue_labels" "waf_labels" {
 
 # Migration-specific labels to track progress
 resource "github_issue_labels" "migration_labels" {
-  repository = ""
+  repository = "compliance-template"
   for_each = {
     "migration:planning"    = "C5DEF5" # Light blue
     "migration:in-progress" = "FEF2C0" # Beige

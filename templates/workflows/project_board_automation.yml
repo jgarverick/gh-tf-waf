@@ -1,0 +1,26 @@
+name: Project Board Automation
+
+on:
+  workflow_dispatch: # Allows manual triggering
+  schedule:
+    - cron: "0 0 * * *" # Runs every day at midnight
+
+jobs:
+  update_boards:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up GitHub CLI
+        run: |
+          gh auth login --with-token ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply Terraform configuration
+        uses: hashicorp/terraform-github-actions@v1.0.0
+        with:
+          terraform_version: "1.0.0" # Replace with your Terraform version
+          terraform_directory: pillars/
+          terraform_apply_args: "-target=null_resource.add_status_field -target=null_resource.add_waf_fields -target=null_resource.add_readme"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

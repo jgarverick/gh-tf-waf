@@ -1,4 +1,4 @@
-Incorporate best practices from:
+Incorporates best practices from:
 - [Anti-Patterns](https://wellarchitected.github.com/library/scenarios/anti-patterns/)
 - [Migrations](https://wellarchitected.github.com/library/scenarios/migrations/)
 - [Monorepos](https://wellarchitected.github.com/library/scenarios/monorepos/)
@@ -8,3 +8,6 @@ Incorporate best practices from:
   - [Application Security](https://wellarchitected.github.com/library/application-security/checklist/)
   - [Governance](https://wellarchitected.github.com/library/governance/checklist/)
   - [Architecture](https://wellarchitected.github.com/library/architecture/checklist/)
+- All Terraform modules should have unit and integration tests in the `test/` directory and should use the Terratest framework.
+- Any Terraform objects that use GitHub Actions or GitHub API GraphQL queries should have a separate template for the GitHub Actions workflow in the `workflows/` directory.
+- All objects under the `pillars/` directory should be composed of objects that allow for configuration of properties relevant to that pillar only.

@@ -145,12 +145,12 @@ resource "github_issue_labels" "architecture_labels" {
 variable "team_members" {
   type = map(list(string))
   default = {
-    api_gateway       = []
-    authentication    = []
-    user_management   = []
-    data_pipeline     = []
-    reporting         = []
-    shared_components = []
+    api_gateway       = ["alice", "bob"]
+    authentication    = ["charlie", "dave"]
+    user_management   = ["eve", "frank"]
+    data_pipeline     = ["grace", "heidi"]
+    reporting         = ["ivan", "judy"]
+    shared_components = ["mallory", "oscar"]
   }
   description = "Map of team names to list of team members"
 }
@@ -158,12 +158,12 @@ variable "team_members" {
 variable "team_maintainers" {
   type = map(list(string))
   default = {
-    api_gateway       = []
-    authentication    = []
-    user_management   = []
-    data_pipeline     = []
-    reporting         = []
-    shared_components = []
+    api_gateway       = ["alice"]
+    authentication    = ["charlie"]
+    user_management   = ["eve"]
+    data_pipeline     = ["grace"]
+    reporting         = ["ivan"]
+    shared_components = ["mallory"]
   }
   description = "Map of team names to list of team maintainers"
 }
