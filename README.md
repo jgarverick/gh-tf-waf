@@ -1,5 +1,7 @@
 # GitHub Well-Architected Framework Implementation
 
+[![Terraform Tests](https://github.com/jgarverick/gh-tf-waf/actions/workflows/terraform_tests.yml/badge.svg)](https://github.com/jgarverick/gh-tf-waf/actions/workflows/terraform_tests.yml)
+
 This repository provides a Terraform-based implementation of the [GitHub Well-Architected Framework](https://wellarchitected.github.com/). It helps you establish and maintain a secure, reliable, and efficient GitHub environment by codifying best practices across key pillars.
 
 **This is a work in progress and is not yet complete. Expect things to not work right away as I make changes. If you see a need for a specific feature or fix, please open an issue.**
