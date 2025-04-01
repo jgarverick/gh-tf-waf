@@ -5,20 +5,61 @@ on:
   pull_request:
     branches:
       - main
+  push:
+    branches:
+      - main
+    paths:
+      - 'modules/**'
+      - 'pillars/**'
+      - 'test/**'
+      - '*.tf'
 
 jobs:
-  test:
-    name: Run Tests
+  prepare:
+    name: Discover Tests
     runs-on: ubuntu-latest
+    outputs:
+      modules: ${{ steps.find-modules.outputs.modules }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Find modules with tests
+        id: find-modules
+        run: |
+          MODULES=$(find modules -name "*_test.go" -path "*/test/*" | cut -d/ -f2 | sort -u | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "modules=$MODULES" >> $GITHUB_OUTPUT
+          echo "Found modules with tests: $MODULES"
+
+  module_tests:
+    name: Test Module - ${{ matrix.module }}
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module: ${{ fromJson(needs.prepare.outputs.modules) }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
-          go-version: '1.20' # or your preferred version
+          go-version: '1.20'
+          cache: true
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: '1.5.0'
+          terraform_wrapper: false
+
+      - name: Install Terratest dependencies
+        run: |
+          go get github.com/gruntwork-io/terratest/modules/terraform
+          go get github.com/stretchr/testify/assert
 
       - name: Download Go modules
         run: go mod download
@@ -26,7 +67,55 @@ jobs:
       - name: Verify Go modules
         run: go mod verify
 
-      - name: Run tests
-        run: go test -v ./...
+      - name: Run module tests
+        run: |
+          cd modules/${{ matrix.module }}/test
+          go test -v -timeout 30m
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TF_LOG: INFO
+
+  integration_tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: module_tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+          cache: true
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: '1.5.0'
+          terraform_wrapper: false
+
+      - name: Download Go modules
+        run: go mod download
+
+      - name: Run integration tests
+        run: go test -v ./test/...
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TF_LOG: INFO
+
+  summary:
+    name: Test Summary
+    needs: [module_tests, integration_tests]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Test outcome summary
+        run: |
+          if [[ "${{ needs.module_tests.result }}" == "success" && "${{ needs.integration_tests.result }}" == "success" ]]; then
+            echo "✅ All tests passed successfully"
+            exit 0
+          else
+            echo "❌ Some tests failed"
+            exit 1
+          fi
