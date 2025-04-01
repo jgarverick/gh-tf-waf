@@ -1,0 +1,16 @@
+mutation {
+  createProjectV2Field(input: {
+    projectId: "__PROJECT_ID__"
+    dataType: SINGLE_SELECT
+    name: "Impact"
+    singleSelectOptions: [
+      {name: "High"},
+      {name: "Medium"},
+      {name: "Low"}
+    ]
+  }) {
+    projectV2Field {
+      id
+    }
+  }
+}

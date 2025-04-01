@@ -1,0 +1,19 @@
+mutation {
+  createProjectV2Field(input: {
+    projectId: "__PROJECT_ID__"
+    dataType: SINGLE_SELECT
+    name: "Migration Readiness"
+    singleSelectOptions: [
+      {name: "Not Started"},
+      {name: "Planning"},
+      {name: "In Progress"},
+      {name: "Ready"},
+      {name: "Completed"},
+      {name: "N/A"}
+    ]
+  }) {
+    projectV2Field {
+      id
+    }
+  }
+}

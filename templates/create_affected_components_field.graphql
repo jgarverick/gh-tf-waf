@@ -1,0 +1,11 @@
+mutation {
+  createProjectV2Field(input: {
+    projectId: "__PROJECT_ID__"
+    dataType: TEXT
+    name: "Affected Components"
+  }) {
+    projectV2Field {
+      id
+    }
+  }
+}

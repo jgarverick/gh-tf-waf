@@ -1,0 +1,10 @@
+mutation {
+  updateProjectV2(input: {
+    projectId: "__PROJECT_ID__"
+    readme: """__README_CONTENT__"""
+  }) {
+    projectV2 {
+      id
+    }
+  }
+}

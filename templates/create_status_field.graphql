@@ -1,0 +1,12 @@
+mutation {
+  createProjectV2Field(input: {
+    projectId: "__PROJECT_ID__"
+    dataType: SINGLE_SELECT
+    name: "Status"
+    singleSelectOptions: [ __STATUS_OPTIONS__ ]
+  }) {
+    projectV2Field {
+      id
+    }
+  }
+}

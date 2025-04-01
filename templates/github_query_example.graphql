@@ -1,0 +1,5 @@
+{
+  repository(owner: "owner", name: "repo") {
+    // ...existing query fields...
+  }
+}

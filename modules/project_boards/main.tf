@@ -22,23 +22,7 @@ resource "null_resource" "add_status_field" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      # Create status field with predefined options
-      gh api graphql -f query='
-        mutation {
-          createProjectV2Field(input: {
-            projectId: "${each.value.id}"
-            dataType: SINGLE_SELECT
-            name: "Status"
-            singleSelectOptions: [
-              ${join(",", [for status in var.default_statuses : "{name: \"${status}\"}"])}
-            ]
-          }) {
-            projectV2Field {
-              id
-            }
-          }
-        }
-      '
+      gh api graphql -f query=@/workspaces/gh-tf-waf/templates/create_status_field.graphql
     EOT
   }
 }
@@ -56,85 +40,13 @@ resource "null_resource" "add_waf_fields" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      # Add WAF layer field
-      gh api graphql -f query='
-        mutation {
-          createProjectV2Field(input: {
-            projectId: "${each.value.id}"
-            dataType: SINGLE_SELECT
-            name: "WAF Layer"
-            singleSelectOptions: [
-              {name: "Security"},
-              {name: "Governance"},
-              {name: "Productivity"},
-              {name: "Collaboration"},
-              {name: "Architecture"}
-            ]
-          }) {
-            projectV2Field {
-              id
-            }
-          }
-        }
-      '
+      gh api graphql -f query=@/workspaces/gh-tf-waf/templates/create_waf_layer_field.graphql
 
-      # Add impact level field
-      gh api graphql -f query='
-        mutation {
-          createProjectV2Field(input: {
-            projectId: "${each.value.id}"
-            dataType: SINGLE_SELECT
-            name: "Impact"
-            singleSelectOptions: [
-              {name: "High"},
-              {name: "Medium"},
-              {name: "Low"}
-            ]
-          }) {
-            projectV2Field {
-              id
-            }
-          }
-        }
-      '
+      gh api graphql -f query=@/workspaces/gh-tf-waf/templates/create_impact_field.graphql
 
-      # Add migration readiness field for migration tracking
-      gh api graphql -f query='
-        mutation {
-          createProjectV2Field(input: {
-            projectId: "${each.value.id}"
-            dataType: SINGLE_SELECT
-            name: "Migration Readiness"
-            singleSelectOptions: [
-              {name: "Not Started"},
-              {name: "Planning"},
-              {name: "In Progress"},
-              {name: "Ready"},
-              {name: "Completed"},
-              {name: "N/A"}
-            ]
-          }) {
-            projectV2Field {
-              id
-            }
-          }
-        }
-      '
+      gh api graphql -f query=@/workspaces/gh-tf-waf/templates/create_migration_readiness_field.graphql
 
-      # Add monorepo component tracking field
-      gh api graphql -f query='
-        mutation {
-          createProjectV2Field(input: {
-            projectId: "${each.value.id}"
-            dataType: TEXT
-            name: "Affected Components"
-          }) {
-            projectV2Field {
-              id
-            }
-          }
-        }
-      '
+      gh api graphql -f query=@/workspaces/gh-tf-waf/templates/create_affected_components_field.graphql
     EOT
   }
 }
@@ -159,23 +71,7 @@ resource "null_resource" "add_readme" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      # Add README content
-      gh api graphql -f query='
-        mutation {
-          updateProjectV2(input: {
-            projectId: "${each.value.id}"
-            readme: """${lookup(
-    { for project in var.projects : project.name => project },
-    each.value.name,
-    { readme = "" }
-).readme}"""
-          }) {
-            projectV2 {
-              id
-            }
-          }
-        }
-      '
+      gh api graphql -f query=@/workspaces/gh-tf-waf/templates/update_project_readme.graphql
     EOT
-}
+  }
 }
