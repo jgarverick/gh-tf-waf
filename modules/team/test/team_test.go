@@ -2,12 +2,13 @@ package test
 
 import (
 	"fmt"
-	"github.com/gruntwork-io/terratest/modules/random"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/gruntwork-io/terratest/modules/random"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTeamModuleBasic(t *testing.T) {
@@ -43,6 +44,52 @@ func TestTeamModuleBasic(t *testing.T) {
 
 	teamPrivacy := terraform.Output(t, terraformOptions, "team_privacy")
 	assert.Contains(t, teamPrivacy, "closed")
+}
+
+func TestTeamModuleEdgeCases(t *testing.T) {
+	t.Parallel()
+
+	githubToken := os.Getenv("GITHUB_TOKEN")
+	if githubToken == "" {
+		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
+	}
+
+	// Edge case: Missing required variable
+	t.Run("MissingTeamName", func(t *testing.T) {
+		terraformOptions := &terraform.Options{
+			TerraformDir: "../",
+			Vars: map[string]interface{}{
+				"teams": []map[string]interface{}{
+					{
+						// Missing "name"
+						"description": "Test team managed by Terratest",
+						"privacy":     "closed",
+					},
+				},
+			},
+		}
+		_, err := terraform.InitAndApplyE(t, terraformOptions)
+		assert.Error(t, err, "Expected an error when required variable is missing")
+	})
+
+	// Edge case: Invalid variable value
+	t.Run("InvalidTeamPrivacy", func(t *testing.T) {
+		teamName := fmt.Sprintf("test-team-invalid-%s", strings.ToLower(random.UniqueId()))
+		terraformOptions := &terraform.Options{
+			TerraformDir: "../",
+			Vars: map[string]interface{}{
+				"teams": []map[string]interface{}{
+					{
+						"name":        teamName,
+						"description": "Test team managed by Terratest",
+						"privacy":     "invalid-privacy",
+					},
+				},
+			},
+		}
+		_, err := terraform.InitAndApplyE(t, terraformOptions)
+		assert.Error(t, err, "Expected an error when variable value is invalid")
+	})
 }
 
 func TestTeamWithMembersAndRepositories(t *testing.T) {

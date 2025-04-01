@@ -2,10 +2,11 @@ package test
 
 import (
 	"fmt"
-	"github.com/gruntwork-io/terratest/modules/random"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/gruntwork-io/terratest/modules/random"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
@@ -19,7 +20,6 @@ func TestBranchProtectionModuleBasic(t *testing.T) {
 		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
 	}
 
-	// First create a repository
 	repoName := fmt.Sprintf("branch-protection-test-%s", strings.ToLower(random.UniqueId()))
 	repoOptions := &terraform.Options{
 		TerraformDir: "../../repo",
@@ -33,39 +33,19 @@ func TestBranchProtectionModuleBasic(t *testing.T) {
 			},
 		},
 	}
+	defer terraform.Destroy(t, repoOptions)
+	terraform.InitAndApply(t, repoOptions)
 
-	// Deploy the repository using Terraform
-	_, err := terraform.InitAndApplyE(t, repoOptions)
-	assert.NoError(t, err, "Failed to apply Terraform configuration for repo")
-
-	// Destroy the repository after the test finishes
-	defer func() {
-		_, err := terraform.DestroyE(t, repoOptions)
-		assert.NoError(t, err, "Failed to destroy Terraform configuration for repo")
-	}()
-
-	// TODO: Add assertions to verify the repository was created correctly
-
-	// Now, test the branch protection module
 	branchProtectionOptions := &terraform.Options{
-		TerraformDir: "../../", // Assuming branch protection module is in the root
+		TerraformDir: "../../",
 		Vars: map[string]interface{}{
 			"repository": repoName,
-			// Add other necessary variables for branch protection
 		},
 	}
+	defer terraform.Destroy(t, branchProtectionOptions)
+	terraform.InitAndApply(t, branchProtectionOptions)
 
-	// Apply the branch protection module
-	_, err = terraform.InitAndApplyE(t, branchProtectionOptions)
-	assert.NoError(t, err, "Failed to apply Terraform configuration for branch protection")
-
-	// Destroy the branch protection module after the test finishes
-	defer func() {
-		_, err := terraform.DestroyE(t, branchProtectionOptions)
-		assert.NoError(t, err, "Failed to destroy Terraform configuration for branch protection")
-	}()
-
-	// TODO: Add assertions to verify branch protection rules are configured correctly
+	// Add assertions to verify branch protection rules are configured correctly
 }
 
 func TestBranchProtectionModuleAdvanced(t *testing.T) {
@@ -126,4 +106,38 @@ func TestBranchProtectionModuleAdvanced(t *testing.T) {
 	protectedPatterns := terraform.Output(t, terraformOptions, "protected_patterns")
 	assert.Contains(t, protectedPatterns, "main")
 	assert.Contains(t, protectedPatterns, "release/*")
+}
+
+func TestBranchProtectionModuleEdgeCases(t *testing.T) {
+	t.Parallel()
+
+	githubToken := os.Getenv("GITHUB_TOKEN")
+	if githubToken == "" {
+		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
+	}
+
+	// Edge case: Missing required variable
+	t.Run("MissingRepository", func(t *testing.T) {
+		branchProtectionOptions := &terraform.Options{
+			TerraformDir: "../../",
+			Vars:         map[string]interface{}{
+				// Missing "repository"
+			},
+		}
+		_, err := terraform.InitAndApplyE(t, branchProtectionOptions)
+		assert.Error(t, err, "Expected an error when required variable is missing")
+	})
+
+	// Edge case: Invalid variable value
+	t.Run("InvalidBranchPattern", func(t *testing.T) {
+		branchProtectionOptions := &terraform.Options{
+			TerraformDir: "../../",
+			Vars: map[string]interface{}{
+				"repository":      "test-repo",
+				"branch_patterns": []string{"*invalid*pattern"},
+			},
+		}
+		_, err := terraform.InitAndApplyE(t, branchProtectionOptions)
+		assert.Error(t, err, "Expected an error when branch pattern is invalid")
+	})
 }

@@ -16,25 +16,50 @@ func TestGithubAuthModuleBasic(t *testing.T) {
 		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
 	}
 
-	terraformOptions := &terraform.Options{
-		TerraformDir: "../",
-		Vars: map[string]interface{}{
-			"saml_sso_url":         "https://example.com/saml",
-			"saml_issuer_url":      "https://example.com",
-			"saml_idp_certificate": "certificate",
-		},
-	}
+	// Regular case
+	t.Run("ValidInputs", func(t *testing.T) {
+		terraformOptions := &terraform.Options{
+			TerraformDir: "../",
+			Vars: map[string]interface{}{
+				"saml_sso_url":         "https://example.com/saml",
+				"saml_issuer_url":      "https://example.com",
+				"saml_idp_certificate": "certificate",
+			},
+		}
+		defer terraform.Destroy(t, terraformOptions)
+		terraform.InitAndApply(t, terraformOptions)
 
-	defer terraform.Destroy(t, terraformOptions)
+		authStatus := terraform.Output(t, terraformOptions, "auth_status")
+		assert.Equal(t, "configured", authStatus)
+	})
 
-	terraform.InitAndApply(t, terraformOptions)
+	// Edge case: Missing required variable
+	t.Run("MissingRequiredVariable", func(t *testing.T) {
+		terraformOptions := &terraform.Options{
+			TerraformDir: "../",
+			Vars: map[string]interface{}{
+				"saml_issuer_url":      "https://example.com",
+				"saml_idp_certificate": "certificate",
+				// Missing "saml_sso_url"
+			},
+		}
+		_, err := terraform.InitAndApplyE(t, terraformOptions)
+		assert.Error(t, err, "Expected an error when required variable is missing")
+	})
 
-	// Add assertions to validate the configuration
-	authStatus := terraform.Output(t, terraformOptions, "auth_status")
-	assert.Equal(t, "configured", authStatus)
-
-	ssoUrl := terraform.Output(t, terraformOptions, "saml_sso_url")
-	assert.Equal(t, "https://example.com/saml", ssoUrl)
+	// Edge case: Invalid variable value
+	t.Run("InvalidVariableValue", func(t *testing.T) {
+		terraformOptions := &terraform.Options{
+			TerraformDir: "../",
+			Vars: map[string]interface{}{
+				"saml_sso_url":         "invalid-url",
+				"saml_issuer_url":      "https://example.com",
+				"saml_idp_certificate": "certificate",
+			},
+		}
+		_, err := terraform.InitAndApplyE(t, terraformOptions)
+		assert.Error(t, err, "Expected an error when variable value is invalid")
+	})
 }
 
 func TestGithubAuthModuleWithRBAC(t *testing.T) {

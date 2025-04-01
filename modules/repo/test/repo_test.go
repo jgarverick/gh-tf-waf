@@ -2,12 +2,13 @@ package test
 
 import (
 	"fmt"
-	"github.com/gruntwork-io/terratest/modules/random"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/gruntwork-io/terratest/modules/random"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGithubRepositoryModuleBasic(t *testing.T) {
@@ -139,4 +140,52 @@ func TestGithubRepositoryModuleWithTemplate(t *testing.T) {
 
 	actualRepoName := terraform.Output(t, terraformOptions, "project_ids")
 	assert.Contains(t, actualRepoName, repoName)
+}
+
+func TestGithubRepositoryModuleEdgeCases(t *testing.T) {
+	t.Parallel()
+
+	githubToken := os.Getenv("GITHUB_TOKEN")
+	if githubToken == "" {
+		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
+	}
+
+	// Edge case: Missing required variable
+	t.Run("MissingRepositoryName", func(t *testing.T) {
+		terraformOptions := &terraform.Options{
+			TerraformDir: "../",
+			Vars: map[string]interface{}{
+				"repositories": []map[string]interface{}{
+					{
+						// Missing "name"
+						"description": "Example repository managed by Terratest",
+						"visibility":  "private",
+					},
+				},
+				"billing_email": "test@example.com",
+			},
+		}
+		_, err := terraform.InitAndApplyE(t, terraformOptions)
+		assert.Error(t, err, "Expected an error when required variable is missing")
+	})
+
+	// Edge case: Invalid variable value
+	t.Run("InvalidRepositoryVisibility", func(t *testing.T) {
+		repoName := fmt.Sprintf("test-repo-invalid-%s", strings.ToLower(random.UniqueId()))
+		terraformOptions := &terraform.Options{
+			TerraformDir: "../",
+			Vars: map[string]interface{}{
+				"repositories": []map[string]interface{}{
+					{
+						"name":        repoName,
+						"description": "Example repository managed by Terratest",
+						"visibility":  "invalid-visibility",
+					},
+				},
+				"billing_email": "test@example.com",
+			},
+		}
+		_, err := terraform.InitAndApplyE(t, terraformOptions)
+		assert.Error(t, err, "Expected an error when variable value is invalid")
+	})
 }

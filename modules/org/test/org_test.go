@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestOrgModule(t *testing.T) {
@@ -14,15 +15,39 @@ func TestOrgModule(t *testing.T) {
 		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
 	}
 
-	terraformOptions := &terraform.Options{
-		TerraformDir: "../", // points to the org module root
-		Vars: map[string]interface{}{
-			"organization_name": "test-org",
-			// ...existing variables if any...
-		},
-	}
+	// Regular case
+	t.Run("ValidInputs", func(t *testing.T) {
+		terraformOptions := &terraform.Options{
+			TerraformDir: "../", // points to the org module root
+			Vars: map[string]interface{}{
+				"organization_name": "test-org",
+			},
+		}
+		defer terraform.Destroy(t, terraformOptions)
+		terraform.InitAndApply(t, terraformOptions)
+	})
 
-	defer terraform.Destroy(t, terraformOptions)
-	terraform.InitAndApply(t, terraformOptions)
-	// ...existing assertions if outputs exist...
+	// Edge case: Missing required variable
+	t.Run("MissingRequiredVariable", func(t *testing.T) {
+		terraformOptions := &terraform.Options{
+			TerraformDir: "../", // points to the org module root
+			Vars:         map[string]interface{}{
+				// Missing "organization_name"
+			},
+		}
+		_, err := terraform.InitAndApplyE(t, terraformOptions)
+		assert.Error(t, err, "Expected an error when required variable is missing")
+	})
+
+	// Edge case: Invalid variable value
+	t.Run("InvalidVariableValue", func(t *testing.T) {
+		terraformOptions := &terraform.Options{
+			TerraformDir: "../", // points to the org module root
+			Vars: map[string]interface{}{
+				"organization_name": "",
+			},
+		}
+		_, err := terraform.InitAndApplyE(t, terraformOptions)
+		assert.Error(t, err, "Expected an error when variable value is invalid")
+	})
 }
