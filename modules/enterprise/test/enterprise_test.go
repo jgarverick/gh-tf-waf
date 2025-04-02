@@ -5,8 +5,13 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
+
+func init() {
+	_ = godotenv.Load("../../../.env")
+}
 
 func TestEnterpriseModule(t *testing.T) {
 	t.Parallel()
@@ -24,7 +29,7 @@ func TestEnterpriseModule(t *testing.T) {
 				"description":    "Test Enterprise",
 				"administrators": []string{},
 				"github_token":   os.Getenv("GITHUB_TOKEN"),
-				"billing_email":  "test@example.com",
+				"billing_email":  os.Getenv("BILLING_EMAIL"),
 				"location":       "US",
 				"admin_logins":   []string{"test-admin"},
 				"enterprise_id":  "ENT-12345",
@@ -45,7 +50,7 @@ func TestEnterpriseModule(t *testing.T) {
 				"description":    "Test Enterprise",
 				"administrators": []string{},
 				"github_token":   os.Getenv("GITHUB_TOKEN"),
-				"billing_email":  "test@example.com",
+				"billing_email":  os.Getenv("BILLING_EMAIL"),
 				"location":       "US",
 				"admin_logins":   []string{"test-admin"},
 				// Missing "name"

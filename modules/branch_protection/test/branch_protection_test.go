@@ -7,10 +7,14 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/random"
-
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
+
+func init() {
+	_ = godotenv.Load("../../../.env")
+}
 
 func TestBranchProtectionModuleBasic(t *testing.T) {
 	t.Parallel()
@@ -69,7 +73,7 @@ func TestBranchProtectionModuleAdvanced(t *testing.T) {
 					"auto_init":   true,
 				},
 			},
-			"billing_email": "test@example.com",
+			"billing_email": os.Getenv("BILLING_EMAIL"),
 		},
 	}
 

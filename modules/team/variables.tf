@@ -55,3 +55,13 @@ variable "create_default_maintainer" {
   type        = bool
   default     = false
 }
+
+variable "teams" {
+  description = "List of team configurations, each containing name, description, and privacy."
+  type = list(object({
+    name        = string
+    description = string
+    privacy     = string
+  }))
+  default = []
+}

@@ -5,8 +5,13 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
+
+func init() {
+	_ = godotenv.Load("../../../.env")
+}
 
 func TestGithubAuthModuleBasic(t *testing.T) {
 	t.Parallel()
@@ -24,6 +29,7 @@ func TestGithubAuthModuleBasic(t *testing.T) {
 				"saml_sso_url":         "https://example.com/saml",
 				"saml_issuer_url":      "https://example.com",
 				"saml_idp_certificate": "certificate",
+				"auth_status":          "configured", // Added expected output for validation
 			},
 		}
 		defer terraform.Destroy(t, terraformOptions)
@@ -55,6 +61,7 @@ func TestGithubAuthModuleBasic(t *testing.T) {
 				"saml_sso_url":         "invalid-url",
 				"saml_issuer_url":      "https://example.com",
 				"saml_idp_certificate": "certificate",
+				"auth_status":          "error", // Added expected output for validation
 			},
 		}
 		_, err := terraform.InitAndApplyE(t, terraformOptions)

@@ -8,8 +8,13 @@ import (
 
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
+
+func init() {
+	_ = godotenv.Load("../../../.env")
+}
 
 func TestTeamModuleBasic(t *testing.T) {
 	t.Parallel()
@@ -40,10 +45,13 @@ func TestTeamModuleBasic(t *testing.T) {
 
 	// Add assertions to validate team creation
 	createdTeams := terraform.Output(t, terraformOptions, "team_ids")
-	assert.Contains(t, createdTeams, teamName)
+	assert.NotEmpty(t, createdTeams, "Expected team_ids output to contain a valid team ID")
+
+	teamNameOutput := terraform.Output(t, terraformOptions, "team_name")
+	assert.Equal(t, teamName, teamNameOutput, "Expected team_name output to match the provided team name")
 
 	teamPrivacy := terraform.Output(t, terraformOptions, "team_privacy")
-	assert.Contains(t, teamPrivacy, "closed")
+	assert.Equal(t, "closed", teamPrivacy, "Expected team_privacy output to be 'closed'")
 }
 
 func TestTeamModuleEdgeCases(t *testing.T) {
@@ -113,7 +121,7 @@ func TestTeamWithMembersAndRepositories(t *testing.T) {
 					"auto_init":   true,
 				},
 			},
-			"billing_email": "test@example.com",
+			"billing_email": os.Getenv("BILLING_EMAIL"),
 		},
 	}
 

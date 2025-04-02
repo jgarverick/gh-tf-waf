@@ -5,7 +5,12 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/joho/godotenv"
 )
+
+func init() {
+	_ = godotenv.Load("../.env")
+}
 
 func TestAccGithubRepository_basic(t *testing.T) {
 	if os.Getenv("GITHUB_TOKEN") == "" {

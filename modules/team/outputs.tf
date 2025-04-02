@@ -22,3 +22,13 @@ output "maintainers" {
   description = "List of team maintainers"
   value       = var.maintainers
 }
+
+output "team_ids" {
+  description = "List of team IDs created by the module"
+  value       = [github_team.team.id]
+}
+
+output "team_privacy" {
+  description = "Privacy settings of the created team"
+  value       = github_team.team.privacy
+}

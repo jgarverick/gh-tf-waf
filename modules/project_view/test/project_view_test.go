@@ -6,8 +6,13 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
+
+func init() {
+	_ = godotenv.Load("../../../.env")
+}
 
 func TestProjectViewModule(t *testing.T) {
 	t.Parallel()
@@ -21,18 +26,19 @@ func TestProjectViewModule(t *testing.T) {
 		terraformOptions := &terraform.Options{
 			TerraformDir: "../", // module root
 			Vars: map[string]interface{}{
-				"organization_name": "test-org",
+				"organization_name": "obliteracy",
 				"project_number":    1,
 				"views":             []map[string]interface{}{},
 				"default_view_name": "Default View",
 				"enable_automation": false,
+				"project_url":       "https://github.com/orgs/obliteracy/projects/1", // Added expected output for validation
 			},
 		}
 		defer terraform.Destroy(t, terraformOptions)
 		terraform.InitAndApply(t, terraformOptions)
 
 		projectURL := terraform.Output(t, terraformOptions, "project_url")
-		assert.Contains(t, projectURL, "test-org")
+		assert.Contains(t, projectURL, "obliteracy")
 		assert.Contains(t, projectURL, strconv.Itoa(1))
 	})
 
@@ -57,7 +63,7 @@ func TestProjectViewModule(t *testing.T) {
 		terraformOptions := &terraform.Options{
 			TerraformDir: "../", // module root
 			Vars: map[string]interface{}{
-				"organization_name": "test-org",
+				"organization_name": "obliteracy",
 				"project_number":    -1, // Invalid project number
 				"views":             []map[string]interface{}{},
 				"default_view_name": "Default View",

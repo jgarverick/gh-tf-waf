@@ -8,8 +8,13 @@ import (
 
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
+
+func init() {
+	_ = godotenv.Load("../../../.env")
+}
 
 func TestGithubRepositoryModuleBasic(t *testing.T) {
 	t.Parallel()
@@ -31,7 +36,7 @@ func TestGithubRepositoryModuleBasic(t *testing.T) {
 					"visibility":  "private",
 				},
 			},
-			"billing_email": "test@example.com",
+			"billing_email": os.Getenv("BILLING_EMAIL"),
 		},
 	}
 
@@ -71,7 +76,7 @@ func TestGithubRepositoryModuleAutoInit(t *testing.T) {
 					"auto_init":   true,
 				},
 			},
-			"billing_email": "test@example.com",
+			"billing_email": os.Getenv("BILLING_EMAIL"),
 		},
 	}
 
@@ -109,7 +114,7 @@ func TestGithubRepositoryModuleWithTemplate(t *testing.T) {
 					"is_template": true,
 				},
 			},
-			"billing_email": "test@example.com",
+			"billing_email": os.Getenv("BILLING_EMAIL"),
 		},
 	}
 
@@ -131,7 +136,7 @@ func TestGithubRepositoryModuleWithTemplate(t *testing.T) {
 					"use_template":        true,
 				},
 			},
-			"billing_email": "test@example.com",
+			"billing_email": os.Getenv("BILLING_EMAIL"),
 		},
 	}
 
@@ -162,7 +167,7 @@ func TestGithubRepositoryModuleEdgeCases(t *testing.T) {
 						"visibility":  "private",
 					},
 				},
-				"billing_email": "test@example.com",
+				"billing_email": os.Getenv("BILLING_EMAIL"),
 			},
 		}
 		_, err := terraform.InitAndApplyE(t, terraformOptions)
@@ -182,7 +187,7 @@ func TestGithubRepositoryModuleEdgeCases(t *testing.T) {
 						"visibility":  "invalid-visibility",
 					},
 				},
-				"billing_email": "test@example.com",
+				"billing_email": os.Getenv("BILLING_EMAIL"),
 			},
 		}
 		_, err := terraform.InitAndApplyE(t, terraformOptions)

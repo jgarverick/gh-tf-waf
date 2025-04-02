@@ -1,6 +1,7 @@
 module terratest
 
 go 1.24.1
+
 require (
 	github.com/gruntwork-io/terratest v0.48.2
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.36.1
@@ -43,6 +44,7 @@ require (
 	github.com/hashicorp/terraform-svchost v0.1.1 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
 	github.com/jinzhu/copier v0.0.0-20190924061706-b57f9002281a // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

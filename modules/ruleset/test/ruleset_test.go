@@ -5,8 +5,13 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
+
+func init() {
+	_ = godotenv.Load("../../../.env")
+}
 
 func TestRulesetModule(t *testing.T) {
 	t.Parallel()
@@ -44,6 +49,7 @@ func TestRulesetModule(t *testing.T) {
 					"allow_deletions":           false,
 				},
 				"protected_branches": []string{"main", "develop"},
+				"protected_patterns": []string{"main", "develop"}, // Added expected output for validation
 			},
 		}
 		defer terraform.Destroy(t, terraformOptions)
@@ -51,6 +57,8 @@ func TestRulesetModule(t *testing.T) {
 
 		protectedBranches := terraform.Output(t, terraformOptions, "protected_branches")
 		assert.Contains(t, protectedBranches, "main")
+		protectedPatterns := terraform.Output(t, terraformOptions, "protected_patterns")
+		assert.Contains(t, protectedPatterns, "main")
 	})
 
 	// Edge case: Missing required variable

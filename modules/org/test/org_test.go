@@ -5,8 +5,13 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
+
+func init() {
+	_ = godotenv.Load("../../../.env")
+}
 
 func TestOrgModule(t *testing.T) {
 	t.Parallel()
@@ -14,13 +19,15 @@ func TestOrgModule(t *testing.T) {
 	if os.Getenv("GITHUB_TOKEN") == "" {
 		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
 	}
-
+	if os.Getenv("BILLING_EMAIL") == "" {
+		t.Skip("BILLING_EMAIL must be set for acceptance tests")
+	}
 	// Regular case
 	t.Run("ValidInputs", func(t *testing.T) {
 		terraformOptions := &terraform.Options{
 			TerraformDir: "../", // points to the org module root
 			Vars: map[string]interface{}{
-				"organization_name": "test-org",
+				"organization_name": "obliteracy",
 			},
 		}
 		defer terraform.Destroy(t, terraformOptions)

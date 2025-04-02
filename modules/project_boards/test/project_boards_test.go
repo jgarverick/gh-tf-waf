@@ -5,8 +5,13 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
+
+func init() {
+	_ = godotenv.Load("../../../.env")
+}
 
 func TestProjectBoardsModule(t *testing.T) {
 	t.Parallel()
@@ -20,7 +25,7 @@ func TestProjectBoardsModule(t *testing.T) {
 		terraformOptions := &terraform.Options{
 			TerraformDir: "../", // module root
 			Vars: map[string]interface{}{
-				"organization_name": "test-org",
+				"organization_name": "obliteracy",
 				"projects": []map[string]interface{}{
 					{
 						"name":        "Test Project Board",
@@ -63,7 +68,7 @@ func TestProjectBoardsModule(t *testing.T) {
 		terraformOptions := &terraform.Options{
 			TerraformDir: "../", // module root
 			Vars: map[string]interface{}{
-				"organization_name": "test-org",
+				"organization_name": "obliteracy",
 				"projects": []map[string]interface{}{
 					{
 						"name":        "",
