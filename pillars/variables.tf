@@ -18,6 +18,7 @@ variable "governance_team_maintainers" {
 variable "admin_team_id" {
   description = "ID of the administrators team that can bypass rules"
   type        = string
+  default     = "admin"
 }
 
 variable "security_team_members" {
@@ -45,4 +46,5 @@ variable "cross_functional_collaborators" {
     username   = string
     permission = string
   }))
+  default = []
 }

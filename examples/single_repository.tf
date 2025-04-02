@@ -1,31 +1,21 @@
 # Example: Single repository configuration
 
-# Create a repository
-resource "github_repository" "example_repo" {
-  name         = "example-repository"
-  description  = "Example repository managed by Terraform"
-  visibility   = "private"
-  has_issues   = true
-  has_projects = true
-  has_wiki     = false
+# Create a repository using the repo module
+module "example_repo" {
+  source            = "../modules/repo"
+  organization_name = var.github_organization
+  repositories      = []
+  teams             = []
 }
 
-# Branch protection rule (example)
-resource "github_branch_protection" "branch_protection" {
-  repository_id = github_repository.example_repo.node_id
-  pattern       = "main"
-
-  required_pull_request_reviews {
-    dismiss_stale_reviews           = true
-    require_code_owner_reviews      = true
-    required_approving_review_count = 1
+# Branch protection rule using the branch_protection module
+module "branch_protection" {
+  source             = "../modules/ruleset"
+  name               = "example-repo-branch-protection"
+  protected_branches = ["default"]
+  rules = {
+    required_reviewers    = 2
+    dismiss_stale_reviews = true
   }
-
-  required_status_checks {
-    strict   = true
-    contexts = ["ci/test"] # Replace with your CI context
-  }
-
-
-  force_push_bypassers = []
+  target_repositories = []
 }

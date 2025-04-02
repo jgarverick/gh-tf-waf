@@ -50,11 +50,31 @@ variable "repositories" {
     secret_scanning                 = optional(bool, false)
     secret_scanning_push_protection = optional(bool, false)
   }))
-  default = []
+
 }
 
 variable "enforce_admins" {
   description = "Enforce repository rules on administrators"
   type        = bool
   default     = true
+}
+
+variable "organization_name" {
+  description = "Name of the organization"
+  type        = string
+}
+
+variable "teams" {
+  description = "List of teams to manage with their specific configurations"
+  type = list(object({
+    name        = string
+    description = optional(string, "")
+    privacy     = optional(string, "closed")
+    members     = optional(list(string), [])
+    repositories = optional(list(object({
+      name       = string
+      permission = string
+    })), [])
+  }))
+
 }

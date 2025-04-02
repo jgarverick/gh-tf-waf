@@ -55,8 +55,9 @@ module "org_ruleset" {
 # Default repository settings for standardization
 # Addresses anti-pattern: Inconsistent repository configurations
 module "default_repo_settings" {
-  source = "../modules/repo"
-
+  source            = "../modules/repo"
+  organization_name = var.organization_name
+  teams             = var.teams
   # Operational excellence layer: Standardize repository settings
   default_repo_config = {
     has_wiki               = false            # Reduce maintenance overhead
