@@ -14,62 +14,23 @@ resource "github_repository_ruleset" "default" {
     }
   }
 
-  # Branch creation rules
-  dynamic "rules" {
-    for_each = var.rules.creation ? [1] : []
-    content {
-      creation = var.rules.creation
-    }
-  }
+  rules {
+    creation                = var.rules.creation
+    update                  = var.rules.update
+    deletion                = var.rules.deletion
+    required_signatures     = var.rules.required_signatures
+    required_linear_history = var.rules.required_linear_history
 
-  # Branch update rules
-  dynamic "rules" {
-    for_each = var.rules.update ? [1] : []
-    content {
-      update = var.rules.update
+    required_deployments {
+      required_deployment_environments = ["staging"]
     }
-  }
+    pull_request {
+      required_approving_review_count = var.rules.required_reviewers
 
-  # Branch deletion rules
-  dynamic "rules" {
-    for_each = var.rules.deletion ? [1] : []
-    content {
-      deletion = var.rules.deletion
+      dismiss_stale_reviews_on_push = var.rules.dismiss_stale_reviews
+      require_code_owner_review     = var.rules.require_code_owner_review
     }
-  }
 
-  # Required commit signatures - prevents anti-pattern of unverified commits
-  dynamic "rules" {
-    for_each = var.rules.required_signatures ? [1] : []
-    content {
-      required_signatures = var.rules.required_signatures
-    }
-  }
-
-  # Linear history - prevents merge commits for cleaner monorepo history
-  dynamic "rules" {
-    for_each = var.rules.required_linear_history ? [1] : []
-    content {
-      required_linear_history = var.rules.required_linear_history
-    }
-  }
-
-  # Required deployments before merging
-  dynamic "rules" {
-    for_each = var.rules.required_deployments ? [1] : []
-    content {
-      required_deployments {
-        required_deployment_environments = ["staging"]
-      }
-    }
-  }
-
-  # Required pull request reviews - supports the "operational excellence" layer
-  dynamic "rules" {
-    for_each = var.rules.required_reviewers > 0 ? [1] : []
-    content {
-
-    }
   }
 
   # Set up bypass rules for administrators or designated teams
@@ -81,5 +42,4 @@ resource "github_repository_ruleset" "default" {
       bypass_mode = bypass_actors.value.bypass_mode
     }
   }
-
 }

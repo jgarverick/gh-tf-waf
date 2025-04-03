@@ -1,6 +1,7 @@
 module "appsec_settings" {
   source                                                       = "../modules/org"
   billing_email                                                = var.billing_email
+  organization_name                                            = var.organization_name
   default_repository_permission                                = "read"
   members_can_create_repositories                              = false
   members_can_create_public_repositories                       = false

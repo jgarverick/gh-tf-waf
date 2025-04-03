@@ -4,21 +4,21 @@
 locals {
   # Define repository names for architecture components
   architecture_repositories = [
-    "api-gateway",
-    "authentication-service",
-    "user-management-service",
-    "data-pipeline",
-    "reporting-service"
+    "api_gateway",
+    "authentication_service",
+    "user_management_service",
+    "data_pipeline",
+    "reporting_service"
   ]
 
   # Define team names for architecture ownership
   architecture_teams = {
-    api_gateway       = "api-gateway-team"
-    authentication    = "authentication-team"
-    user_management   = "user-management-team"
-    data_pipeline     = "data-engineering-team"
-    reporting         = "reporting-team"
-    shared_components = "platform-engineering-team"
+    api_gateway             = "api-gateway-team"
+    authentication_service  = "authentication-team"
+    user_management_service = "user-management-team"
+    data_pipeline           = "data-engineering-team"
+    reporting_service       = "reporting-team"
+    shared_components       = "platform-engineering-team"
   }
 
   # Define branch protection rules for architecture repositories
@@ -60,6 +60,7 @@ resource "github_repository" "architecture_components" {
   allow_squash_merge     = true
   allow_merge_commit     = false
   delete_branch_on_merge = true
+
 }
 
 # Create teams for each architecture component
@@ -81,6 +82,8 @@ module "architecture_teams" {
   repository_permissions = {
     github_repository.architecture_components[each.key].name = "admin"
   }
+
+  depends_on = [github_repository.architecture_components]
 }
 
 # Apply branch protection rules to architecture repositories
@@ -125,7 +128,7 @@ resource "github_repository_file" "ci_cd_workflow" {
 # Define issue labels for architecture-related issues
 # Addresses anti-pattern: Inconsistent issue tracking
 resource "github_issue_labels" "architecture_labels" {
-  repository = github_repository.architecture_components[0].name
+  repository = values(github_repository.architecture_components)[0].name
   for_each = {
     "architecture:design"      = "0052CC" # Blue
     "architecture:refactor"    = "CC0000" # Red
@@ -144,12 +147,12 @@ resource "github_issue_labels" "architecture_labels" {
 variable "team_members" {
   type = map(list(string))
   default = {
-    api_gateway       = ["alice", "bob"]
-    authentication    = ["charlie", "dave"]
-    user_management   = ["eve", "frank"]
-    data_pipeline     = ["grace", "heidi"]
-    reporting         = ["ivan", "judy"]
-    shared_components = ["mallory", "oscar"]
+    api_gateway             = ["alice", "bob"]
+    authentication_service  = ["charlie", "dave"]
+    user_management_service = ["eve", "frank"]
+    data_pipeline           = ["grace", "heidi"]
+    reporting_service       = ["ivan", "judy"]
+    shared_components       = ["mallory", "oscar"]
   }
   description = "Map of team names to list of team members"
 }
@@ -157,12 +160,12 @@ variable "team_members" {
 variable "team_maintainers" {
   type = map(list(string))
   default = {
-    api_gateway       = ["alice"]
-    authentication    = ["charlie"]
-    user_management   = ["eve"]
-    data_pipeline     = ["grace"]
-    reporting         = ["ivan"]
-    shared_components = ["mallory"]
+    api_gateway             = ["alice"]
+    authentication_service  = ["charlie"]
+    user_management_service = ["eve"]
+    data_pipeline           = ["grace"]
+    reporting_service       = ["ivan"]
+    shared_components       = ["mallory"]
   }
   description = "Map of team names to list of team maintainers"
 }

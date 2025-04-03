@@ -7,7 +7,7 @@ teams = [
     name        = "appsec-team"
     description = "Team responsible for application security."
     privacy     = "closed"
-    members     = ["security-lead", "security-engineer"]
+    members     = ["security-lead", "jgarverick"]
     repositories = [
       {
         name       = "appsec-repo"
@@ -19,7 +19,7 @@ teams = [
     name        = "architecture-team"
     description = "Team responsible for system architecture."
     privacy     = "closed"
-    members     = ["architect-lead", "architect-engineer"]
+    members     = ["architect-lead", "jgarverick"]
     repositories = [
       {
         name       = "architecture-repo"
@@ -31,7 +31,7 @@ teams = [
     name        = "collaboration-team"
     description = "Team responsible for collaboration tools and processes."
     privacy     = "closed"
-    members     = ["collab-lead", "collab-engineer"]
+    members     = ["collab-lead", "jgarverick"]
     repositories = [
       {
         name       = "collaboration-repo"
@@ -43,7 +43,7 @@ teams = [
     name        = "governance-team"
     description = "Team responsible for governance policies."
     privacy     = "closed"
-    members     = ["governance-lead", "governance-engineer"]
+    members     = ["governance-lead", "jgarverick"]
     repositories = [
       {
         name       = "governance-repo"
@@ -55,7 +55,7 @@ teams = [
     name        = "productivity-team"
     description = "Team responsible for productivity tools and processes."
     privacy     = "closed"
-    members     = ["productivity-lead", "productivity-engineer"]
+    members     = ["productivity-lead", "jgarverick"]
     repositories = [
       {
         name       = "productivity-repo"

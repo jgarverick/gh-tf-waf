@@ -5,6 +5,7 @@
 module "governance_settings" {
   source                                                       = "../modules/org"
   billing_email                                                = var.billing_email
+  organization_name                                            = var.organization_name
   members_can_create_repositories                              = false
   members_can_create_public_repositories                       = false
   members_can_create_private_repositories                      = false

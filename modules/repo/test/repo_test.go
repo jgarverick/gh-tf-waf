@@ -36,7 +36,21 @@ func TestGithubRepositoryModuleBasic(t *testing.T) {
 					"visibility":  "private",
 				},
 			},
-			"billing_email": os.Getenv("BILLING_EMAIL"),
+			"billing_email":     os.Getenv("BILLING_EMAIL"),
+			"organization_name": os.Getenv("GITHUB_ORGANIZATION"),
+			"teams": []map[string]interface{}{
+				{
+					"name":        "test-repo-admins",
+					"description": "Team with admin access to basic test repositories",
+					"privacy":     "closed",
+					"repositories": []map[string]interface{}{
+						{
+							"name":       repoName,
+							"permission": "admin",
+						},
+					},
+				},
+			},
 		},
 	}
 
@@ -114,7 +128,21 @@ func TestGithubRepositoryModuleWithTemplate(t *testing.T) {
 					"is_template": true,
 				},
 			},
-			"billing_email": os.Getenv("BILLING_EMAIL"),
+			"billing_email":     os.Getenv("BILLING_EMAIL"),
+			"organization_name": os.Getenv("GITHUB_ORGANIZATION"),
+			"teams": []map[string]interface{}{
+				{
+					"name":        "template-repo-admins",
+					"description": "Team with admin access to template repositories",
+					"privacy":     "closed",
+					"repositories": []map[string]interface{}{
+						{
+							"name":       templateRepoName,
+							"permission": "admin",
+						},
+					},
+				},
+			},
 		},
 	}
 
@@ -136,7 +164,21 @@ func TestGithubRepositoryModuleWithTemplate(t *testing.T) {
 					"use_template":        true,
 				},
 			},
-			"billing_email": os.Getenv("BILLING_EMAIL"),
+			"billing_email":     os.Getenv("BILLING_EMAIL"),
+			"organization_name": os.Getenv("GITHUB_ORGANIZATION"),
+			"teams": []map[string]interface{}{
+				{
+					"name":        "template-based-repo-users",
+					"description": "Team with write access to template-based repositories",
+					"privacy":     "closed",
+					"repositories": []map[string]interface{}{
+						{
+							"name":       repoName,
+							"permission": "push",
+						},
+					},
+				},
+			},
 		},
 	}
 
