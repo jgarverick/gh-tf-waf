@@ -34,12 +34,12 @@ resource "github_repository_ruleset" "default" {
   }
 
   # Set up bypass rules for administrators or designated teams
-  dynamic "bypass_actors" {
+  /*   dynamic "bypass_actors" {
     for_each = var.bypass_actors
     content {
       actor_id    = bypass_actors.value.actor_id
       actor_type  = bypass_actors.value.actor_type
       bypass_mode = bypass_actors.value.bypass_mode
     }
-  }
+  } */
 }

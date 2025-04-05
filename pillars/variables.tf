@@ -48,3 +48,37 @@ variable "cross_functional_collaborators" {
   }))
   default = []
 }
+
+
+# Define variables for team members and maintainers
+variable "team_members" {
+  type = map(list(string))
+  default = {
+    api_gateway             = []
+    authentication_service  = []
+    user_management_service = []
+    data_pipeline           = []
+    reporting_service       = []
+    shared_components       = []
+  }
+  description = "Map of team names to list of team members"
+}
+
+variable "team_maintainers" {
+  type = map(list(string))
+  default = {
+    api_gateway             = []
+    authentication_service  = []
+    user_management_service = []
+    data_pipeline           = []
+    reporting_service       = []
+    shared_components       = []
+  }
+  description = "Map of team names to list of team maintainers"
+}
+
+variable "actor_id" {
+  description = "The actor ID for the GitHub API"
+  type        = string
+  default     = "jgarverick"
+}

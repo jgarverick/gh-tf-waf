@@ -69,4 +69,38 @@ func TestActionModule(t *testing.T) {
 		_, err := terraform.InitAndApplyE(t, terraformOptions)
 		assert.Error(t, err, "Expected an error when variable value is invalid")
 	})
+
+	// Add tests for GitHub Actions workflow file and secrets
+	t.Run("AddWorkflowFile", func(t *testing.T) {
+		terraformOptions := &terraform.Options{
+			TerraformDir: "../", // module root
+			Vars: map[string]interface{}{
+				"repository":         "example-repo",
+				"workflow_file":      "ci-cd.yml",
+				"workflow_file_path": "../../../templates/workflows/ci-cd.yml",
+				"branch":             "main",
+			},
+		}
+		defer terraform.Destroy(t, terraformOptions)
+		terraform.InitAndApply(t, terraformOptions)
+		// Validate workflow file creation (mock validation)
+	})
+
+	t.Run("AddSecrets", func(t *testing.T) {
+		terraformOptions := &terraform.Options{
+			TerraformDir: "../", // module root
+			Vars: map[string]interface{}{
+				"repository": "example-repo",
+				"secrets": map[string]interface{}{
+					"TEST_SECRET": map[string]interface{}{
+						"environment":     "production",
+						"encrypted_value": "encrypted_dummy_value",
+					},
+				},
+			},
+		}
+		defer terraform.Destroy(t, terraformOptions)
+		terraform.InitAndApply(t, terraformOptions)
+		// Validate secrets creation (mock validation)
+	})
 }

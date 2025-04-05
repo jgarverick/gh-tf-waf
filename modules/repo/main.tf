@@ -21,6 +21,8 @@ resource "github_organization_settings" "default_repo_settings" {
   advanced_security_enabled_for_new_repositories               = true # GitHub Advanced Security
   secret_scanning_enabled_for_new_repositories                 = true # Detect leaked secrets
   secret_scanning_push_protection_enabled_for_new_repositories = true # Prevent secret leaks
+
+  depends_on = [github_repository.repositories]
 }
 
 # Repository resources for each repository in the variable

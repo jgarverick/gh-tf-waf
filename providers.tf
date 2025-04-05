@@ -22,4 +22,5 @@ variable "github_token" {
 variable "github_organization" {
   type        = string
   description = "GitHub organization name"
+  default     = "obliteracy-waf"
 }

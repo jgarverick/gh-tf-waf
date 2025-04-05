@@ -82,72 +82,52 @@ resource "github_repository_file" "discussion_categories" {
 
 # Cross-repository labels for consistent tagging
 # Addresses anti-pattern: Inconsistent labeling across repositories
-resource "github_issue_labels" "priority_labels" {
+module "priority_labels" {
+  source     = "../modules/labels"
   repository = "compliance-template"
-  for_each = {
+  labels = {
     "priority:critical" = "FF0000" # Red
     "priority:high"     = "FFA500" # Orange
     "priority:medium"   = "FFFF00" # Yellow
     "priority:low"      = "00FF00" # Green
   }
-  label {
-    name        = each.key
-    color       = each.value
-    description = "Priority level for issues and PRs"
-  }
-
 }
 
-resource "github_issue_labels" "type_labels" {
+module "type_labels" {
+  source     = "../modules/labels"
   repository = "compliance-template"
-  for_each = {
+  labels = {
     "type:feature"     = "0000FF" # Blue
     "type:bug"         = "FF00FF" # Magenta
     "type:docs"        = "00FFFF" # Cyan
     "type:performance" = "800080" # Purple
     "type:security"    = "FF0000" # Red
   }
-  label {
-    name        = each.key
-    color       = each.value
-    description = "Type of work"
-  }
-
 }
 
 # WAF-specific labels to aid in well-architected improvement tracking
-resource "github_issue_labels" "waf_labels" {
+module "waf_labels" {
+  source     = "../modules/labels"
   repository = "compliance-template"
-  for_each = {
+  labels = {
     "waf:security"      = "B60205" # Dark red
     "waf:governance"    = "1D76DB" # Blue
     "waf:productivity"  = "0E8A16" # Green
     "waf:collaboration" = "5319E7" # Purple
     "waf:architecture"  = "FEF2C0" # Beige
   }
-  label {
-    name        = each.key
-    color       = each.value
-    description = "Well-Architected Framework improvement area"
-  }
-
 }
 
 # Migration-specific labels to track progress
-resource "github_issue_labels" "migration_labels" {
+module "migration_labels" {
+  source     = "../modules/labels"
   repository = "compliance-template"
-  for_each = {
+  labels = {
     "migration:planning"    = "C5DEF5" # Light blue
     "migration:in-progress" = "FEF2C0" # Beige
     "migration:completed"   = "0E8A16" # Green
     "migration:blocked"     = "B60205" # Dark red
   }
-  label {
-    name        = each.key
-    color       = each.value
-    description = "Migration status tracking"
-  }
-
 }
 
 # GitHub Actions workflows to automate collaboration

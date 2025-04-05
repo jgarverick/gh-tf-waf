@@ -23,7 +23,7 @@ module "org_ruleset" {
   source = "../modules/ruleset"
 
   name        = "WAF Standard Protection"
-  target_type = "organization"
+  target_type = "branch"
   enforcement = "active"
 
   # Monorepo support: Protect branches that commonly exist in monorepo structures
@@ -263,3 +263,13 @@ resource "github_repository_file" "readme" {
   commit_email        = "terraform@example.com"
   overwrite_on_create = true
 }
+/*
+module "governance_project" {
+  source            = "../modules/project"
+  organization_name = var.organization_name
+  name              = "governance"
+  description       = "Project for governance policies"
+  visibility        = "internal"
+  template          = "compliance-template"
+  repository_name   = "architecture-repo"
+} */

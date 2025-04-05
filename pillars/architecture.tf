@@ -2,13 +2,13 @@
 
 # Define local variables for common configurations
 locals {
-  # Define repository names for architecture components
+  # Update architecture_repositories to include objects with attributes
   architecture_repositories = [
-    "api_gateway",
-    "authentication_service",
-    "user_management_service",
-    "data_pipeline",
-    "reporting_service"
+    { name = "api_gateway", team = "api-gateway-team" },
+    { name = "authentication_service", team = "authentication-team" },
+    { name = "user_management_service", team = "user-management-team" },
+    { name = "data_pipeline", team = "data-engineering-team" },
+    { name = "reporting_service", team = "reporting-team" }
   ]
 
   # Define team names for architecture ownership
@@ -38,134 +38,68 @@ locals {
   }
 }
 
-# Create repositories for each architecture component
-# Addresses anti-pattern: Monolithic architecture
-resource "github_repository" "architecture_components" {
-  for_each = toset(local.architecture_repositories)
+# Refactor to use for_each for dynamic module creation
 
-  name        = each.value
-  description = "Repository for ${each.value} component"
-  visibility  = "private"
+module "architecture_repositories" {
+  for_each = { for repo in local.architecture_repositories : repo.name => repo }
 
-  # Enable security features by default
-  vulnerability_alerts = true
-  has_issues           = true
-  has_projects         = true
-  has_wiki             = false
-
-  # Monorepo support: Ensure consistent naming conventions
-  topics = ["waf-architecture", "monorepo-component"]
-
-  # Migration support: Enable squash merging for cleaner history
-  allow_squash_merge     = true
-  allow_merge_commit     = false
-  delete_branch_on_merge = true
-
+  source            = "../modules/repo"
+  organization_name = var.organization_name
+  repositories = [
+    {
+      name        = each.value.name
+      description = "Repository for ${each.value.name}"
+      visibility  = "private"
+    }
+  ]
+  teams = [
+    {
+      name       = each.value.team
+      permission = "admin"
+    }
+  ]
 }
 
-# Create teams for each architecture component
-# Addresses anti-pattern: Lack of clear ownership
 module "architecture_teams" {
-  for_each = local.architecture_teams
+  for_each = tomap(local.architecture_teams)
 
   source = "../modules/team"
+  name   = each.key
 
-  name        = each.key
-  description = "Team responsible for ${each.key} component"
-  privacy     = "closed"
-
-  # Define team members and maintainers (replace with actual values)
   members     = var.team_members[each.key]
   maintainers = var.team_maintainers[each.key]
-
-  # Grant appropriate permissions to repositories
   repository_permissions = {
-    github_repository.architecture_components[each.key].name = "admin"
+    (each.key) = "admin"
   }
-
-  depends_on = [github_repository.architecture_components]
 }
 
-# Apply branch protection rules to architecture repositories
-# Addresses anti-pattern: Unprotected branches
-resource "github_branch_protection" "architecture_branch_protection" {
-  pattern = "main"
+module "architecture_branch_protection" {
+  for_each = { for repo in local.architecture_repositories : repo.name => repo }
 
-  for_each = github_repository.architecture_components
-
-  repository_id = each.value.node_id
-
-  # Enforce required pull request reviews
-  required_pull_request_reviews {
-    required_approving_review_count = 2
-    dismiss_stale_reviews           = true
-  }
-
-  # Enforce required status checks
-  required_status_checks {
-    strict   = true
-    contexts = ["ci/build", "ci/test"]
-  }
-
-  # Enforce admin status
-  enforce_admins = true
+  source              = "../modules/ruleset"
+  target_repositories = [each.value.name]
+  rules               = local.branch_protection_rules
+  depends_on          = [module.architecture_repositories]
 }
 
-# Define GitHub Actions workflows for CI/CD
-# Addresses anti-pattern: Manual deployments
-resource "github_repository_file" "ci_cd_workflow" {
-  for_each            = github_repository.architecture_components
-  repository          = each.value.name
-  branch              = "main"
-  file                = "../templates/workflows/ci-cd.yml"
-  content             = file("../templates/workflows/ci-cd.yml")
-  commit_message      = "Add CI/CD workflow via Terraform"
-  commit_author       = "GitHub WAF"
-  commit_email        = "waf@example.com"
-  overwrite_on_create = true
+module "ci_cd_workflows" {
+  for_each = { for repo in local.architecture_repositories : repo.name => repo }
+
+  source             = "../modules/action"
+  workflow_file      = "ci-cd.yml"
+  repository         = each.value.name
+  workflow_file_path = "../templates/workflows/ci-cd.yml"
 }
 
-# Define issue labels for architecture-related issues
-# Addresses anti-pattern: Inconsistent issue tracking
-resource "github_issue_labels" "architecture_labels" {
-  repository = values(github_repository.architecture_components)[0].name
-  for_each = {
-    "architecture:design"      = "0052CC" # Blue
-    "architecture:refactor"    = "CC0000" # Red
-    "architecture:performance" = "CC6600" # Orange
-    "architecture:security"    = "CC00CC" # Purple
-  }
-  label {
-    name        = each.key
-    color       = each.value
-    description = "Architecture-related issue"
-  }
+module "architecture_labels" {
+  for_each = { for repo in local.architecture_repositories : repo.name => repo }
 
-}
-
-# Define variables for team members and maintainers
-variable "team_members" {
-  type = map(list(string))
-  default = {
-    api_gateway             = ["alice", "bob"]
-    authentication_service  = ["charlie", "dave"]
-    user_management_service = ["eve", "frank"]
-    data_pipeline           = ["grace", "heidi"]
-    reporting_service       = ["ivan", "judy"]
-    shared_components       = ["mallory", "oscar"]
+  source     = "../modules/labels"
+  repository = each.value.name
+  labels = {
+    "architecture:design"      = "0052CC"
+    "architecture:refactor"    = "CC0000"
+    "architecture:performance" = "CC6600"
+    "architecture:security"    = "CC00CC"
   }
-  description = "Map of team names to list of team members"
-}
-
-variable "team_maintainers" {
-  type = map(list(string))
-  default = {
-    api_gateway             = ["alice"]
-    authentication_service  = ["charlie"]
-    user_management_service = ["eve"]
-    data_pipeline           = ["grace"]
-    reporting_service       = ["ivan"]
-    shared_components       = ["mallory"]
-  }
-  description = "Map of team names to list of team maintainers"
 }

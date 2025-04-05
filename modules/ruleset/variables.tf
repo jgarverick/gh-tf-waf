@@ -5,12 +5,12 @@ variable "name" {
 }
 
 variable "target_type" {
-  description = "The type of target for the ruleset (organization or repository)"
+  description = "The type of target for the ruleset (branch or tag)"
   type        = string
-  default     = "organization"
+  default     = "branch"
   validation {
-    condition     = contains(["organization", "repository"], var.target_type)
-    error_message = "Valid values for target_type are 'organization' or 'repository'"
+    condition     = contains(["branch", "tag"], var.target_type)
+    error_message = "Valid values for target_type are 'branch' or 'tag'"
   }
 }
 
