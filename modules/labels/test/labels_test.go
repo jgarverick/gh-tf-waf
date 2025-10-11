@@ -11,7 +11,7 @@ func TestLabelsModule(t *testing.T) {
 	// Removed unnecessary and incorrect assignment to t
 
 	terraformOptions := &terraform.Options{
-		TerraformDir: "../..",
+		TerraformDir: "../",
 		Vars: map[string]interface{}{
 			"repository": "test-repo",
 			"labels": map[string]string{
