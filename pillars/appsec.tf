@@ -1,3 +1,16 @@
+locals {
+  appsec_codeql_targets = {
+    "compliance-template" = {
+      languages     = ["javascript", "python"]
+      workflow_file = "codeql-compliance.yml"
+    }
+    "security-policies" = {
+      languages     = ["javascript"]
+      workflow_file = "codeql-security.yml"
+    }
+  }
+}
+
 module "appsec_settings" {
   source                                                       = "../modules/org"
   billing_email                                                = var.billing_email
@@ -13,4 +26,14 @@ module "appsec_settings" {
   secret_scanning_push_protection_enabled_for_new_repositories = true
   secret_scanning_enabled_for_new_repositories                 = true
   dependabot_security_updates_enabled_for_new_repositories     = true
+}
+
+module "appsec_codeql" {
+  source                 = "../modules/codeql"
+  repositories           = local.appsec_codeql_targets
+  workflow_template_path = abspath("${path.module}/../templates/workflows/codeql.yml")
+  workflow_filename      = "codeql.yml"
+  commit_message         = "Add CodeQL workflow via Terraform"
+  commit_author          = "GitHub WAF"
+  commit_email           = "waf@example.com"
 }

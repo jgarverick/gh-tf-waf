@@ -1,0 +1,48 @@
+name: Monorepo change
+description: Capture cross-component modifications in a monorepo
+labels:
+  - monorepo
+  - waf:architecture
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this issue form to describe changes that affect multiple components in a monorepo so reviewers can assess blast radius quickly.
+  - type: textarea
+    id: change_summary
+    attributes:
+      label: Change summary
+      description: Describe what is changing and why.
+      placeholder: Update shared workflow to require OIDC tokens for deployments
+    validations:
+      required: true
+  - type: textarea
+    id: functional_impact
+    attributes:
+      label: Functional impact
+      description: Describe the user flows or services impacted.
+    validations:
+      required: true
+  - type: textarea
+    id: services
+    attributes:
+      label: Services or components touched
+      description: List the apps, services, or packages impacted.
+      placeholder: |
+        - api_gateway
+        - shared_workflows
+    validations:
+      required: true
+  - type: textarea
+    id: rollout
+    attributes:
+      label: Rollout plan
+      description: Include verification steps, feature flags, and fallback plans.
+  - type: checkboxes
+    id: risk_controls
+    attributes:
+      label: Risk controls
+      options:
+        - label: Design review completed
+        - label: Observability alerts configured
+        - label: Regression tests updated

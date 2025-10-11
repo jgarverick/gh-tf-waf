@@ -29,6 +29,8 @@ The repository is organized into reusable Terraform modules:
 -   **[repo/](modules/repo/)**: For managing GitHub repositories, including security features and CODEOWNERS.
 -   **[ruleset/](modules/ruleset/)**: For defining and enforcing rulesets for branch protection.
 -   **[team/](modules/team/)**: For managing teams and permissions, following the principle of least privilege.
+-   **[codeql/](modules/codeql/)**: For rolling out standardized CodeQL workflows across repositories.
+-   **[repository_templates/](modules/repository_templates/)**: For managing reusable templates (issue forms, discussions, docs) from a centralized catalog.
 
 ## Templates
 
@@ -47,6 +49,9 @@ The `templates/` directory contains templates for issues, pull requests, and oth
     -   **[stale_issues.yml](templates/workflows/stale_issues.yml)**: Closes stale issues and pull requests.
     -   **[cross_repo_visibility.yml](templates/workflows/cross_repo_visibility.yml)**: Provides cross-repository visibility for monorepos.
     -   **[ci-cd.yml](templates/workflows/ci-cd.yml)**: Implements a CI/CD pipeline.
+    -   **[project_view_automation.yml](templates/workflows/project_view_automation.yml)**: Synchronizes Projects v2 status with workflow signals.
+    -   **[codeql.yml](templates/workflows/codeql.yml)**: Baseline CodeQL workflow template referenced by the security pillar.
+-   **[issue_forms/](templates/issue_forms/)**: YAML issue forms for standardized triage across pillars.
 
 ## Getting Started
 

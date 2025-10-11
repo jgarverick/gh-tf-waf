@@ -24,11 +24,13 @@ variable "encrypted_value" {
 variable "workflow_file" {
   type        = string
   description = "The name of the GitHub Actions workflow file"
+  default     = null
 }
 
 variable "workflow_file_path" {
   type        = string
   description = "The local path to the GitHub Actions workflow file"
+  default     = null
 }
 
 variable "workflow_path" {
@@ -50,4 +52,22 @@ variable "secrets" {
   }))
   default     = null
   description = "A map of secrets to be added, where the key is the secret name and the value is an object containing the environment and encrypted value"
+}
+
+variable "workflow_commit_message" {
+  type        = string
+  description = "Commit message used when adding workflows"
+  default     = "Manage GitHub Actions workflow via Terraform"
+}
+
+variable "commit_author" {
+  type        = string
+  description = "Commit author for workflow changes"
+  default     = "GitHub WAF"
+}
+
+variable "commit_email" {
+  type        = string
+  description = "Commit email for workflow changes"
+  default     = "waf@example.com"
 }

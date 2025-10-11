@@ -1,0 +1,60 @@
+name: Feature request
+description: Suggest an improvement to align with the GitHub Well-Architected Framework
+labels:
+  - type:feature
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share the context for the change and reference checklists from https://wellarchitected.github.com when possible.
+  - type: dropdown
+    id: pillar
+    attributes:
+      label: Target pillar
+      options:
+        - Application Security
+        - Architecture
+        - Collaboration
+        - Governance
+        - Productivity
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Provide a one sentence summary of the improvement.
+      placeholder: Automate security baselines for reusable workflows
+    validations:
+      required: true
+  - type: textarea
+    id: business_value
+    attributes:
+      label: Business value
+      description: Explain the business or compliance outcome enabled by this feature.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Use bullet points to describe what success looks like.
+      placeholder: |
+        - CodeQL runs on pull requests and default branch
+        - Alerts raised in security dashboard within 5 minutes
+    validations:
+      required: true
+  - type: input
+    id: due_date
+    attributes:
+      label: Target completion date
+      description: Provide an expected delivery date, if any.
+      placeholder: YYYY-MM-DD
+  - type: checkboxes
+    id: dependencies
+    attributes:
+      label: Dependencies
+      options:
+        - label: Requires new Terraform module
+        - label: Needs GitHub Enterprise permission changes
+        - label: Impacts production repositories

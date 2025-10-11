@@ -5,12 +5,12 @@ output "secret_names" {
 
 output "workflow_file" {
   description = "The name of the GitHub Actions workflow file added to the repository"
-  value       = github_repository_file.workflow.file
+  value       = length(github_repository_file.workflow) > 0 ? github_repository_file.workflow[0].file : null
 }
 
 output "workflow_branch" {
   description = "The branch to which the workflow file was committed"
-  value       = github_repository_file.workflow.branch
+  value       = length(github_repository_file.workflow) > 0 ? github_repository_file.workflow[0].branch : null
 }
 
 output "secrets" {
