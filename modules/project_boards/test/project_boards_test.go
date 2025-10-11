@@ -20,6 +20,11 @@ func TestProjectBoardsModule(t *testing.T) {
 		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
 	}
 
+	// Skip integration tests in CI unless GITHUB_INTEGRATION_TESTS is explicitly set
+	if os.Getenv("CI") == "true" && os.Getenv("GITHUB_INTEGRATION_TESTS") == "" {
+		t.Skip("Skipping integration test in CI environment - requires GitHub API write permissions")
+	}
+
 	// Regular case
 	t.Run("ValidInputs", func(t *testing.T) {
 		terraformOptions := &terraform.Options{

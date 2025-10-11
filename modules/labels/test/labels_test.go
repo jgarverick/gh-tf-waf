@@ -1,6 +1,7 @@
 package test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -8,10 +9,13 @@ import (
 )
 
 func TestLabelsModule(t *testing.T) {
-	// Removed unnecessary and incorrect assignment to t
+	// Skip integration tests in CI unless GITHUB_INTEGRATION_TESTS is explicitly set
+	if os.Getenv("CI") == "true" && os.Getenv("GITHUB_INTEGRATION_TESTS") == "" {
+		t.Skip("Skipping integration test in CI environment - requires GitHub API write permissions")
+	}
 
 	terraformOptions := &terraform.Options{
-		TerraformDir: "../..",
+		TerraformDir: "../",
 		Vars: map[string]interface{}{
 			"repository": "test-repo",
 			"labels": map[string]string{
