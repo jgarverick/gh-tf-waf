@@ -24,6 +24,11 @@ func TestTeamModuleBasic(t *testing.T) {
 		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
 	}
 
+	// Skip integration tests in CI unless GITHUB_INTEGRATION_TESTS is explicitly set
+	if os.Getenv("CI") == "true" && os.Getenv("GITHUB_INTEGRATION_TESTS") == "" {
+		t.Skip("Skipping integration test in CI environment - requires GitHub API write permissions")
+	}
+
 	teamName := fmt.Sprintf("test-team-%s", strings.ToLower(random.UniqueId()))
 
 	terraformOptions := &terraform.Options{
@@ -56,6 +61,11 @@ func TestTeamModuleEdgeCases(t *testing.T) {
 	githubToken := os.Getenv("GITHUB_TOKEN")
 	if githubToken == "" {
 		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
+	}
+
+	// Skip integration tests in CI unless GITHUB_INTEGRATION_TESTS is explicitly set
+	if os.Getenv("CI") == "true" && os.Getenv("GITHUB_INTEGRATION_TESTS") == "" {
+		t.Skip("Skipping integration test in CI environment - requires GitHub API write permissions")
 	}
 
 	// Edge case: Missing required variable
@@ -94,6 +104,11 @@ func TestTeamWithMembersAndRepositories(t *testing.T) {
 	githubToken := os.Getenv("GITHUB_TOKEN")
 	if githubToken == "" {
 		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
+	}
+
+	// Skip integration tests in CI unless GITHUB_INTEGRATION_TESTS is explicitly set
+	if os.Getenv("CI") == "true" && os.Getenv("GITHUB_INTEGRATION_TESTS") == "" {
+		t.Skip("Skipping integration test in CI environment - requires GitHub API write permissions")
 	}
 
 	// First create a repository

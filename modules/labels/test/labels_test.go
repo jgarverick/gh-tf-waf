@@ -8,7 +8,10 @@ import (
 )
 
 func TestLabelsModule(t *testing.T) {
-	// Removed unnecessary and incorrect assignment to t
+	// Skip integration tests in CI unless GITHUB_INTEGRATION_TESTS is explicitly set
+	if os.Getenv("CI") == "true" && os.Getenv("GITHUB_INTEGRATION_TESTS") == "" {
+		t.Skip("Skipping integration test in CI environment - requires GitHub API write permissions")
+	}
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: "../",

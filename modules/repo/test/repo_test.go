@@ -24,6 +24,11 @@ func TestGithubRepositoryModuleBasic(t *testing.T) {
 		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
 	}
 
+	// Skip integration tests in CI unless GITHUB_INTEGRATION_TESTS is explicitly set
+	if os.Getenv("CI") == "true" && os.Getenv("GITHUB_INTEGRATION_TESTS") == "" {
+		t.Skip("Skipping integration test in CI environment - requires GitHub API write permissions")
+	}
+
 	repoName := fmt.Sprintf("test-repo-%s", strings.ToLower(random.UniqueId()))
 
 	terraformOptions := &terraform.Options{
@@ -77,6 +82,11 @@ func TestGithubRepositoryModuleAutoInit(t *testing.T) {
 		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
 	}
 
+	// Skip integration tests in CI unless GITHUB_INTEGRATION_TESTS is explicitly set
+	if os.Getenv("CI") == "true" && os.Getenv("GITHUB_INTEGRATION_TESTS") == "" {
+		t.Skip("Skipping integration test in CI environment - requires GitHub API write permissions")
+	}
+
 	repoName := fmt.Sprintf("test-repo-auto-init-%s", strings.ToLower(random.UniqueId()))
 
 	terraformOptions := &terraform.Options{
@@ -112,6 +122,11 @@ func TestGithubRepositoryModuleWithTemplate(t *testing.T) {
 	githubToken := os.Getenv("GITHUB_TOKEN")
 	if githubToken == "" {
 		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
+	}
+
+	// Skip integration tests in CI unless GITHUB_INTEGRATION_TESTS is explicitly set
+	if os.Getenv("CI") == "true" && os.Getenv("GITHUB_INTEGRATION_TESTS") == "" {
+		t.Skip("Skipping integration test in CI environment - requires GitHub API write permissions")
 	}
 
 	// First create a template repository
@@ -195,6 +210,11 @@ func TestGithubRepositoryModuleEdgeCases(t *testing.T) {
 	githubToken := os.Getenv("GITHUB_TOKEN")
 	if githubToken == "" {
 		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
+	}
+
+	// Skip integration tests in CI unless GITHUB_INTEGRATION_TESTS is explicitly set
+	if os.Getenv("CI") == "true" && os.Getenv("GITHUB_INTEGRATION_TESTS") == "" {
+		t.Skip("Skipping integration test in CI environment - requires GitHub API write permissions")
 	}
 
 	// Edge case: Missing required variable
