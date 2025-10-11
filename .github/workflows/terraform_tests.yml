@@ -77,6 +77,8 @@ jobs:
 
   integration_tests:
     name: Integration Tests
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     needs: module_tests
     steps:
