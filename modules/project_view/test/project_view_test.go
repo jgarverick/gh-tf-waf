@@ -21,6 +21,11 @@ func TestProjectViewModule(t *testing.T) {
 		t.Skip("GITHUB_TOKEN must be set for acceptance tests")
 	}
 
+	// Skip integration tests in CI unless GITHUB_INTEGRATION_TESTS is explicitly set
+	if os.Getenv("CI") == "true" && os.Getenv("GITHUB_INTEGRATION_TESTS") == "" {
+		t.Skip("Skipping integration test in CI environment - requires GitHub API write permissions")
+	}
+
 	// Regular case
 	t.Run("ValidInputs", func(t *testing.T) {
 		terraformOptions := &terraform.Options{
@@ -64,8 +69,13 @@ func TestProjectViewModule(t *testing.T) {
 			TerraformDir: "../", // module root
 			Vars: map[string]interface{}{
 				"organization_name": "obliteracy",
-				"project_number":    -1, // Invalid project number
-				"views":             []map[string]interface{}{},
+				"project_number":    1,
+				"views": []map[string]interface{}{
+					{
+						"name":   "Invalid View",
+						"layout": "invalid-layout", // Invalid layout
+					},
+				},
 				"default_view_name": "Default View",
 				"enable_automation": false,
 			},

@@ -1,209 +1,132 @@
 # GitHub Well-Architected Framework - Collaboration Pillar
 
 locals {
-  # Ensure all templates are referenced from the `templates/` directory
+  repository_name = "compliance-template"
+
   template_files = {
-    bug_report         = "../templates/bug_report.md"
-    feature_request    = "../templates/feature_request.md"
-    monorepo_change    = "../templates/monorepo_change.md"
-    pr_template        = "../templates/pull_request_template.md"
-    discussion_config  = "../templates/discussion_categories.yml"
-    issue_automation   = "../templates/workflows/issue_automation.yml"
-    project_automation = "../templates/workflows/project_automation.yml"
-    stale_issues       = "../templates/workflows/stale_issues.yml"
-    cross_repo         = "../templates/workflows/cross_repo_visibility.yml"
-    team_meeting       = "../templates/meeting_template.md"
-    release_template   = "../templates/release_template.md"
+    issue_forms = {
+      bug_report = {
+        repository_path = ".github/ISSUE_TEMPLATE/bug_report.yml"
+        source_path     = abspath("${path.module}/../templates/issue_forms/bug_report.yml")
+      }
+      feature_request = {
+        repository_path = ".github/ISSUE_TEMPLATE/feature_request.yml"
+        source_path     = abspath("${path.module}/../templates/issue_forms/feature_request.yml")
+      }
+      monorepo_change = {
+        repository_path = ".github/ISSUE_TEMPLATE/monorepo_change.yml"
+        source_path     = abspath("${path.module}/../templates/issue_forms/monorepo_change.yml")
+      }
+      config = {
+        repository_path = ".github/ISSUE_TEMPLATE/config.yml"
+        source_path     = abspath("${path.module}/../templates/issue_forms/config.yml")
+      }
+    }
+    documentation = {
+      pr_template = {
+        repository_path = ".github/PULL_REQUEST_TEMPLATE.md"
+        source_path     = abspath("${path.module}/../templates/pull_request_template.md")
+      }
+      meeting_template = {
+        repository_path = ".github/MEETING_TEMPLATE.md"
+        source_path     = abspath("${path.module}/../templates/meeting_template.md")
+      }
+      release_template = {
+        repository_path = ".github/RELEASE_TEMPLATE.md"
+        source_path     = abspath("${path.module}/../templates/release_template.md")
+      }
+      discussion_categories = {
+        repository_path = ".github/discussion-categories.yml"
+        source_path     = abspath("${path.module}/../templates/discussion_categories.yml")
+      }
+    }
+  }
+
+  workflow_files = {
+    issue_automation = {
+      filename = "issue-automation.yml"
+      source   = abspath("${path.module}/../templates/workflows/issue_automation.yml")
+    }
+    project_automation = {
+      filename = "project-automation.yml"
+      source   = abspath("${path.module}/../templates/workflows/project_automation.yml")
+    }
+    stale_issues = {
+      filename = "stale-issues.yml"
+      source   = abspath("${path.module}/../templates/workflows/stale_issues.yml")
+    }
+    cross_repo_visibility = {
+      filename = "cross-repo-visibility.yml"
+      source   = abspath("${path.module}/../templates/workflows/cross_repo_visibility.yml")
+    }
   }
 }
 
-# Issue templates for standardized communication
-# Addresses anti-pattern: Inconsistent issue reporting and poor project visibility
-resource "github_repository_file" "bug_report_template" {
-  repository          = "compliance-template"
-  branch              = "main"
-  file                = ".github/ISSUE_TEMPLATE/bug_report.md"
-  content             = file(local.template_files.bug_report)
-  commit_message      = "Add bug report template via Terraform"
-  commit_author       = "GitHub WAF"
-  commit_email        = "waf@example.com"
-  overwrite_on_create = true
-}
-
-resource "github_repository_file" "feature_request_template" {
-  repository          = "compliance-template"
-  branch              = "main"
-  file                = ".github/ISSUE_TEMPLATE/feature_request.md"
-  content             = file(local.template_files.feature_request)
-  commit_message      = "Add feature request template via Terraform"
-  commit_author       = "GitHub WAF"
-  commit_email        = "waf@example.com"
-  overwrite_on_create = true
-}
-
-# Special template for monorepo changes
-# Addresses anti-pattern: Missing context for cross-component changes
-resource "github_repository_file" "monorepo_change_template" {
-  repository          = "compliance-template"
-  branch              = "main"
-  file                = ".github/ISSUE_TEMPLATE/monorepo_change.md"
-  content             = file(local.template_files.monorepo_change)
-  commit_message      = "Add monorepo cross-component change template via Terraform"
-  commit_author       = "GitHub WAF"
-  commit_email        = "waf@example.com"
-  overwrite_on_create = true
-}
-
-# PR templates to standardize code reviews
-# Addresses anti-pattern: Inconsistent PR quality and process
-resource "github_repository_file" "pr_template" {
-  repository          = "compliance-template"
-  branch              = "main"
-  file                = ".github/PULL_REQUEST_TEMPLATE.md"
-  content             = file(local.template_files.pr_template)
-  commit_message      = "Add PR template via Terraform"
-  commit_author       = "GitHub WAF"
-  commit_email        = "waf@example.com"
-  overwrite_on_create = true
-}
-
-# Discussion categories to organize team communication
-# Addresses anti-pattern: Scattered communication and tribal knowledge
-resource "github_repository_file" "discussion_categories" {
-  repository          = "compliance-template"
-  branch              = "main"
-  file                = ".github/discussion-categories.yml"
-  content             = file(local.template_files.discussion_config)
-  commit_message      = "Add discussion categories configuration via Terraform"
-  commit_author       = "GitHub WAF"
-  commit_email        = "waf@example.com"
-  overwrite_on_create = true
+# Standardize collaboration templates using reusable module
+module "collaboration_templates" {
+  source     = "../modules/repository_templates"
+  repository = local.repository_name
+  files      = merge(local.template_files.issue_forms, local.template_files.documentation)
 }
 
 # Cross-repository labels for consistent tagging
 # Addresses anti-pattern: Inconsistent labeling across repositories
 module "priority_labels" {
   source     = "../modules/labels"
-  repository = "compliance-template"
+  repository = local.repository_name
   labels = {
-    "priority:critical" = "FF0000" # Red
-    "priority:high"     = "FFA500" # Orange
-    "priority:medium"   = "FFFF00" # Yellow
-    "priority:low"      = "00FF00" # Green
+    "priority:critical" = "FF0000"
+    "priority:high"     = "FFA500"
+    "priority:medium"   = "FFFF00"
+    "priority:low"      = "00FF00"
   }
 }
 
 module "type_labels" {
   source     = "../modules/labels"
-  repository = "compliance-template"
+  repository = local.repository_name
   labels = {
-    "type:feature"     = "0000FF" # Blue
-    "type:bug"         = "FF00FF" # Magenta
-    "type:docs"        = "00FFFF" # Cyan
-    "type:performance" = "800080" # Purple
-    "type:security"    = "FF0000" # Red
+    "type:feature"     = "0000FF"
+    "type:bug"         = "FF00FF"
+    "type:docs"        = "00FFFF"
+    "type:performance" = "800080"
+    "type:security"    = "FF0000"
   }
 }
 
 # WAF-specific labels to aid in well-architected improvement tracking
 module "waf_labels" {
   source     = "../modules/labels"
-  repository = "compliance-template"
+  repository = local.repository_name
   labels = {
-    "waf:security"      = "B60205" # Dark red
-    "waf:governance"    = "1D76DB" # Blue
-    "waf:productivity"  = "0E8A16" # Green
-    "waf:collaboration" = "5319E7" # Purple
-    "waf:architecture"  = "FEF2C0" # Beige
+    "waf:security"      = "B60205"
+    "waf:governance"    = "1D76DB"
+    "waf:productivity"  = "0E8A16"
+    "waf:collaboration" = "5319E7"
+    "waf:architecture"  = "FEF2C0"
   }
 }
 
 # Migration-specific labels to track progress
 module "migration_labels" {
   source     = "../modules/labels"
-  repository = "compliance-template"
+  repository = local.repository_name
   labels = {
-    "migration:planning"    = "C5DEF5" # Light blue
-    "migration:in-progress" = "FEF2C0" # Beige
-    "migration:completed"   = "0E8A16" # Green
-    "migration:blocked"     = "B60205" # Dark red
+    "migration:planning"    = "C5DEF5"
+    "migration:in-progress" = "FEF2C0"
+    "migration:completed"   = "0E8A16"
+    "migration:blocked"     = "B60205"
   }
 }
 
 # GitHub Actions workflows to automate collaboration
-# Addresses anti-pattern: Manual process overhead
-resource "github_repository_file" "issue_automation_workflow" {
-  repository          = "compliance-template"
-  branch              = "main"
-  file                = ".github/workflows/issue-automation.yml"
-  content             = file(local.template_files.issue_automation)
-  commit_message      = "Add issue automation workflow via Terraform"
-  commit_author       = "GitHub WAF"
-  commit_email        = "waf@example.com"
-  overwrite_on_create = true
-}
-
-resource "github_repository_file" "stale_issues_workflow" {
-  repository          = "compliance-template"
-  branch              = "main"
-  file                = ".github/workflows/stale-issues.yml"
-  content             = file(local.template_files.stale_issues)
-  commit_message      = "Add stale issues workflow via Terraform"
-  commit_author       = "GitHub WAF"
-  commit_email        = "waf@example.com"
-  overwrite_on_create = true
-}
-
-# Cross-repository visibility workflow
-# Addresses anti-pattern: Siloed information in monorepos
-resource "github_repository_file" "cross_repo_visibility_workflow" {
-  repository          = "compliance-template"
-  branch              = "main"
-  file                = ".github/workflows/cross-repo-visibility.yml"
-  content             = file(local.template_files.cross_repo)
-  commit_message      = "Add cross-repository visibility workflow via Terraform"
-  commit_author       = "GitHub WAF"
-  commit_email        = "waf@example.com"
-  overwrite_on_create = true
-}
-
-# Team meeting template
-# Addresses anti-pattern: Unstructured meetings and lost context
-resource "github_repository_file" "team_meeting_template" {
-  repository          = "compliance-template"
-  branch              = "main"
-  file                = ".github/MEETING_TEMPLATE.md"
-  content             = file(local.template_files.team_meeting)
-  commit_message      = "Add team meeting template via Terraform"
-  commit_author       = "GitHub WAF"
-  commit_email        = "waf@example.com"
-  overwrite_on_create = true
-}
-
-# Release template for consistent release notes
-# Addresses anti-pattern: Inconsistent release documentation
-resource "github_repository_file" "release_template" {
-  repository          = "compliance-template"
-  branch              = "main"
-  file                = ".github/RELEASE_TEMPLATE.md"
-  content             = file(local.template_files.release_template)
-  commit_message      = "Add release template via Terraform"
-  commit_author       = "GitHub WAF"
-  commit_email        = "waf@example.com"
-  overwrite_on_create = true
-}
-
-# Integration between Actions and Projects for automation
-# Addresses anti-pattern: Manual status updates and tracking
-resource "github_repository_file" "project_automation_workflow" {
-  repository          = "compliance-template"
-  branch              = "main"
-  file                = ".github/workflows/project-automation.yml"
-  content             = file(local.template_files.project_automation)
-  commit_message      = "Add project automation workflow via Terraform"
-  commit_author       = "GitHub WAF"
-  commit_email        = "waf@example.com"
-  overwrite_on_create = true
+module "collaboration_workflows" {
+  for_each                = local.workflow_files
+  source                  = "../modules/action"
+  repository              = local.repository_name
+  workflow_file           = each.value.filename
+  workflow_file_path      = each.value.source
+  workflow_commit_message = "Manage collaboration workflows via Terraform"
 }
 
 # Repository settings for team collaboration

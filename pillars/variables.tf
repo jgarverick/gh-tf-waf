@@ -82,3 +82,9 @@ variable "actor_id" {
   type        = string
   default     = "jgarverick"
 }
+
+variable "productivity_project_number" {
+  description = "GitHub Projects number used by the productivity pillar"
+  type        = number
+  default     = 1
+}
