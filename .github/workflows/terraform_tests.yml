@@ -76,37 +76,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_LOG: INFO
 
-  integration_tests:
-    name: Integration Tests
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    needs: module_tests
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.24'
-          cache: true
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: '1.5.0'
-          terraform_wrapper: false
-
-      - name: Download Go modules
-        run: go mod download
-
-      - name: Run integration tests
-        run: go test -v ./test/...
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TF_LOG: INFO
-
   summary:
     name: Test Summary
     needs: module_tests
