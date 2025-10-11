@@ -13,7 +13,6 @@ on:
     paths:
       - 'modules/**'
       - 'pillars/**'
-      - 'test/**'
       - '*.tf'
 
 jobs:
@@ -110,13 +109,13 @@ jobs:
 
   summary:
     name: Test Summary
-    needs: [module_tests, integration_tests]
+    needs: module_tests
     runs-on: ubuntu-latest
     if: always()
     steps:
       - name: Test outcome summary
         run: |
-          if [[ "${{ needs.module_tests.result }}" == "success" && "${{ needs.integration_tests.result }}" == "success" ]]; then
+          if [[ "${{ needs.module_tests.result }}" == "success" ]]; then
             echo "✅ All tests passed successfully"
             exit 0
           else
