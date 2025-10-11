@@ -64,8 +64,13 @@ func TestProjectViewModule(t *testing.T) {
 			TerraformDir: "../", // module root
 			Vars: map[string]interface{}{
 				"organization_name": "obliteracy",
-				"project_number":    -1, // Invalid project number
-				"views":             []map[string]interface{}{},
+				"project_number":    1,
+				"views": []map[string]interface{}{
+					{
+						"name":   "Invalid View",
+						"layout": "invalid-layout", // Invalid layout
+					},
+				},
 				"default_view_name": "Default View",
 				"enable_automation": false,
 			},

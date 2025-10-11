@@ -26,7 +26,7 @@ func TestRulesetModule(t *testing.T) {
 			TerraformDir: "../", // module root
 			Vars: map[string]interface{}{
 				"name":        "Test Ruleset",
-				"target_type": "organization",
+				"target_type": "branch",
 				"enforcement": "active",
 				"bypass_actors": []map[string]interface{}{
 					{

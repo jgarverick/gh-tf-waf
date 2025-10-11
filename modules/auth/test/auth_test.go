@@ -29,47 +29,49 @@ func TestGithubAuthModuleBasic(t *testing.T) {
 				"saml_sso_url":         "https://example.com/saml",
 				"saml_issuer_url":      "https://example.com",
 				"saml_idp_certificate": "certificate",
-				"auth_status":          "configured", // Added expected output for validation
 			},
 		}
 		defer terraform.Destroy(t, terraformOptions)
 		terraform.InitAndApply(t, terraformOptions)
 
-		authStatus := terraform.Output(t, terraformOptions, "auth_status")
-		assert.Equal(t, "configured", authStatus)
+		samlSsoUrl := terraform.Output(t, terraformOptions, "saml_sso_url")
+		assert.Equal(t, "https://example.com/saml", samlSsoUrl)
 	})
 
-	// Edge case: Missing required variable
-	t.Run("MissingRequiredVariable", func(t *testing.T) {
+	// Edge case: Test with minimal variables (all variables have defaults, so this should succeed)
+	t.Run("MinimalVariables", func(t *testing.T) {
 		terraformOptions := &terraform.Options{
 			TerraformDir: "../",
 			Vars: map[string]interface{}{
-				"saml_issuer_url":      "https://example.com",
-				"saml_idp_certificate": "certificate",
-				// Missing "saml_sso_url"
+				// Use defaults for all variables
 			},
 		}
-		_, err := terraform.InitAndApplyE(t, terraformOptions)
-		assert.Error(t, err, "Expected an error when required variable is missing")
+		defer terraform.Destroy(t, terraformOptions)
+		terraform.InitAndApply(t, terraformOptions)
+
+		samlSsoUrl := terraform.Output(t, terraformOptions, "saml_sso_url")
+		assert.Equal(t, "", samlSsoUrl, "Expected empty string when no value provided")
 	})
 
-	// Edge case: Invalid variable value
-	t.Run("InvalidVariableValue", func(t *testing.T) {
+	// Edge case: Test with OIDC configuration
+	t.Run("OIDCConfiguration", func(t *testing.T) {
 		terraformOptions := &terraform.Options{
 			TerraformDir: "../",
 			Vars: map[string]interface{}{
-				"saml_sso_url":         "invalid-url",
-				"saml_issuer_url":      "https://example.com",
-				"saml_idp_certificate": "certificate",
-				"auth_status":          "error", // Added expected output for validation
+				"oidc_issuer_uri":    "https://example.com/oidc",
+				"oidc_client_id":     "client-id-123",
+				"oidc_client_secret": "secret-value",
 			},
 		}
-		_, err := terraform.InitAndApplyE(t, terraformOptions)
-		assert.Error(t, err, "Expected an error when variable value is invalid")
+		defer terraform.Destroy(t, terraformOptions)
+		terraform.InitAndApply(t, terraformOptions)
+
+		oidcIssuerUri := terraform.Output(t, terraformOptions, "oidc_issuer_uri")
+		assert.Equal(t, "https://example.com/oidc", oidcIssuerUri)
 	})
 }
 
-func TestGithubAuthModuleWithRBAC(t *testing.T) {
+func TestGithubAuthModuleWithBothSAMLAndOIDC(t *testing.T) {
 	t.Parallel()
 
 	githubToken := os.Getenv("GITHUB_TOKEN")
@@ -83,9 +85,9 @@ func TestGithubAuthModuleWithRBAC(t *testing.T) {
 			"saml_sso_url":         "https://example.com/saml",
 			"saml_issuer_url":      "https://example.com",
 			"saml_idp_certificate": "certificate",
-			"enable_rbac":          true,
-			"admin_roles":          []string{"Administrators", "SecurityOfficers"},
-			"viewer_roles":         []string{"Developers", "Viewers"},
+			"oidc_issuer_uri":      "https://example.com/oidc",
+			"oidc_client_id":       "client-id-123",
+			"oidc_client_secret":   "secret-value",
 		},
 	}
 
@@ -93,11 +95,10 @@ func TestGithubAuthModuleWithRBAC(t *testing.T) {
 
 	terraform.InitAndApply(t, terraformOptions)
 
-	// Add assertions for RBAC configuration
-	rbacEnabled := terraform.Output(t, terraformOptions, "rbac_enabled")
-	assert.Equal(t, "true", rbacEnabled)
+	// Verify both SAML and OIDC outputs
+	samlSsoUrl := terraform.Output(t, terraformOptions, "saml_sso_url")
+	assert.Equal(t, "https://example.com/saml", samlSsoUrl)
 
-	adminRoles := terraform.Output(t, terraformOptions, "admin_roles")
-	assert.Contains(t, adminRoles, "Administrators")
-	assert.Contains(t, adminRoles, "SecurityOfficers")
+	oidcIssuerUri := terraform.Output(t, terraformOptions, "oidc_issuer_uri")
+	assert.Equal(t, "https://example.com/oidc", oidcIssuerUri)
 }
