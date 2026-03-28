@@ -13,6 +13,7 @@ This implementation covers the following pillars:
 -   **[Architecture](pillars/architecture.tf)**: Defines the structure and components of your GitHub environment, promoting modularity and scalability.
 -   **[Application Security](pillars/appsec.tf)**: Implements security best practices to protect your code and data.
 -   **[Collaboration](pillars/collaboration.tf)**: Enhances team collaboration through standardized templates, labels, and workflows.
+-   **[Copilot](pillars/copilot.tf)**: Governs GitHub Copilot adoption, usage reporting, seat management, and cost accountability.
 -   **[Governance](pillars/governance.tf)**: Establishes policies and controls to manage your GitHub organization effectively.
 -   **[Productivity](pillars/productivity.tf)**: Automates tasks and streamlines workflows to improve team productivity.
 
@@ -22,6 +23,7 @@ The repository is organized into reusable Terraform modules:
 
 -   **[action/](modules/action/)**: For creating and managing GitHub Actions secrets.
 -   **[auth/](modules/auth/)**: For configuring authentication-related resources (SAML, OIDC).
+-   **[copilot/](modules/copilot/)**: For governing GitHub Copilot adoption, usage reporting, and seat management.
 -   **[enterprise/](modules/enterprise/)**: For managing enterprise-level settings.
 -   **[org/](modules/org/)**: For organization-level settings.
 -   **[project_boards/](modules/project_boards/)**: For creating and configuring project boards with WAF-aligned fields.
@@ -48,9 +50,11 @@ The `templates/` directory contains templates for issues, pull requests, and oth
     -   **[project_automation.yml](templates/workflows/project_automation.yml)**: Automates project board updates.
     -   **[stale_issues.yml](templates/workflows/stale_issues.yml)**: Closes stale issues and pull requests.
     -   **[cross_repo_visibility.yml](templates/workflows/cross_repo_visibility.yml)**: Provides cross-repository visibility for monorepos.
-    -   **[ci-cd.yml](templates/workflows/ci-cd.yml)**: Implements a CI/CD pipeline.
+    -   **[ci-cd.yml](templates/workflows/ci-cd.yml)**: Implements a CI/CD pipeline (uses `actions/checkout@v4`, `setup-node@v4`, Node 20, minimal permissions, environment-gated deployments).
     -   **[project_view_automation.yml](templates/workflows/project_view_automation.yml)**: Synchronizes Projects v2 status with workflow signals.
     -   **[codeql.yml](templates/workflows/codeql.yml)**: Baseline CodeQL workflow template referenced by the security pillar.
+    -   **[copilot_usage_report.yml](templates/workflows/copilot_usage_report.yml)**: Weekly Copilot usage reporting workflow for seat and adoption tracking.
+    -   **[oidc_deploy.yml](templates/workflows/oidc_deploy.yml)**: OIDC-based deployment workflow that replaces long-lived static cloud credentials with short-lived federated tokens.
 -   **[issue_forms/](templates/issue_forms/)**: YAML issue forms for standardized triage across pillars.
 
 ## Getting Started

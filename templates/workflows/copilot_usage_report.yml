@@ -1,0 +1,85 @@
+# WAF: Copilot usage reporting workflow
+# Automates collection and reporting of GitHub Copilot seat usage and adoption metrics.
+# Addresses WAF Productivity pillar guidance on tracking Copilot KPIs and cost control.
+#
+# References:
+#   - https://wellarchitected.github.com/library/productivity/checklist/
+#   - https://docs.github.com/en/rest/copilot/copilot-usage
+
+name: Copilot Usage Report
+
+on:
+  # WAF: Run weekly to track adoption trends over time
+  schedule:
+    - cron: '0 8 * * 1'  # Every Monday at 08:00 UTC
+  workflow_dispatch:     # Allow manual on-demand reporting
+
+# WAF: Minimal required permissions
+permissions:
+  contents: read
+
+jobs:
+  report:
+    name: Generate Copilot Usage Report
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # Required to commit the generated report
+      issues: write     # Required to open tracking issues for anomalies
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # WAF: Use OIDC / GitHub App token instead of PAT wherever possible.
+      # Replace COPILOT_GOVERNANCE_TOKEN with a fine-grained token scoped to
+      # `read:org` and `manage_billing:copilot` permissions.
+      - name: Fetch Copilot seat usage via API
+        id: fetch_usage
+        run: |
+          RESPONSE=$(curl -s -o usage.json -w "%{http_code}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.COPILOT_GOVERNANCE_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/orgs/${{ vars.GITHUB_ORG }}/copilot/usage")
+          echo "http_status=$RESPONSE" >> "$GITHUB_OUTPUT"
+
+      - name: Validate API response
+        run: |
+          STATUS="${{ steps.fetch_usage.outputs.http_status }}"
+          if [ "$STATUS" != "200" ]; then
+            echo "::error::Copilot API returned HTTP $STATUS. Check token permissions."
+            exit 1
+          fi
+
+      - name: Generate Markdown report
+        run: |
+          # Validate expected API response structure before processing
+          if ! jq -e 'type == "array" and length > 0' usage.json > /dev/null 2>&1; then
+            echo "::warning::Copilot usage API returned an empty or unexpected payload — report will show zeroes."
+          fi
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          TOTAL=$(jq '[.[].total_suggestions_count // 0] | add // 0' usage.json)
+          ACCEPTED=$(jq '[.[].total_acceptances_count // 0] | add // 0' usage.json)
+          ACTIVE=$(jq '[.[].total_active_users // 0] | max // 0' usage.json)
+          cat <<EOF > reports/copilot-usage-$(date +%Y-%m-%d).md
+          # Copilot Usage Report — $(date +%Y-%m-%d)
+
+          Generated: ${TIMESTAMP}
+
+          | Metric | Value |
+          |--------|-------|
+          | Total suggestions | ${TOTAL} |
+          | Accepted suggestions | ${ACCEPTED} |
+          | Peak active users | ${ACTIVE} |
+
+          > Report generated automatically by the [Copilot Usage Report](.github/workflows/copilot_usage_report.yml) workflow.
+          EOF
+
+      - name: Commit report
+        run: |
+          mkdir -p reports
+          git config user.name  "GitHub WAF"
+          git config user.email "waf@example.com"
+          git add reports/
+          git diff --cached --quiet || git commit -m "chore: add weekly Copilot usage report [skip ci]"
+          git push
