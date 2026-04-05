@@ -88,3 +88,9 @@ variable "productivity_project_number" {
   type        = number
   default     = 1
 }
+
+variable "copilot_team_id" {
+  description = "GitHub team ID to assign admin access to the Copilot governance repository. Leave empty to skip team assignment."
+  type        = string
+  default     = ""
+}

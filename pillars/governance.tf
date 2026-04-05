@@ -212,17 +212,26 @@ resource "github_repository_file" "security_workflow" {
       schedule:
         - cron: '0 0 * * 0'  # Weekly scan
 
+    # WAF: Minimal required permissions following principle of least privilege
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
     jobs:
       scan:
         runs-on: ubuntu-latest
         steps:
-          - uses: actions/checkout@v3
-          - name: Run security scan
-            uses: github/codeql-action/init@v2
+          - uses: actions/checkout@v4
+          - name: Initialize CodeQL
+            uses: github/codeql-action/init@v3
             with:
               languages: javascript, python
+              queries: +security-and-quality
+          - name: Autobuild
+            uses: github/codeql-action/autobuild@v3
           - name: Perform analysis
-            uses: github/codeql-action/analyze@v2
+            uses: github/codeql-action/analyze@v3
   EOT
   commit_message      = "Add security workflow via Terraform"
   commit_author       = "Terraform"
