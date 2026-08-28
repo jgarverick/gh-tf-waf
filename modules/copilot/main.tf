@@ -5,8 +5,8 @@
 #   - Apply consistent labels to track Copilot-related work items
 #
 # References:
-#   - https://wellarchitected.github.com/library/productivity/checklist/
-#   - https://wellarchitected.github.com/library/governance/checklist/
+#   - https://learn.github.com/well-architected/library/productivity/checklist/
+#   - https://learn.github.com/well-architected/library/governance/checklist/
 
 # Dedicated repository for tracking Copilot governance and usage
 resource "github_repository" "copilot_governance" {

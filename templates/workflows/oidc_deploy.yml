@@ -9,7 +9,7 @@
 #   3. Adjust the `aws-region` and resource paths for your deployment target.
 #
 # References:
-#   - https://wellarchitected.github.com/library/application-security/recommendations/
+#   - https://learn.github.com/well-architected/library/application-security/recommendations/
 #   - https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments
 
 name: OIDC Deploy

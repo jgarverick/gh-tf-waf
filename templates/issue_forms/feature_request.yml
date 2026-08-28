@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Share the context for the change and reference checklists from https://wellarchitected.github.com when possible.
+        Share the context for the change and reference checklists from https://learn.github.com/well-architected when possible.
   - type: dropdown
     id: pillar
     attributes:
