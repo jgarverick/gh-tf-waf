@@ -9,9 +9,9 @@
 #     human-authored code.
 #
 # References:
-#   - https://wellarchitected.github.com/library/productivity/checklist/
-#   - https://wellarchitected.github.com/library/governance/checklist/
-#   - https://wellarchitected.github.com/library/application-security/checklist/
+#   - https://learn.github.com/well-architected/library/productivity/checklist/
+#   - https://learn.github.com/well-architected/library/governance/checklist/
+#   - https://learn.github.com/well-architected/library/application-security/checklist/
 
 module "copilot_governance" {
   source = "../modules/copilot"

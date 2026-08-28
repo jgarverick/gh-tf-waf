@@ -1,13 +1,13 @@
 Incorporates best practices from:
-- [Anti-Patterns](https://wellarchitected.github.com/library/scenarios/anti-patterns/)
-- [Migrations](https://wellarchitected.github.com/library/scenarios/migrations/)
-- [Monorepos](https://wellarchitected.github.com/library/scenarios/monorepos/)
-- [GitHub Well-Architected Layers](https://wellarchitected.github.com/library/overview/layers/)
-  - [Productivity](https://wellarchitected.github.com/library/productivity/checklist/)
-  - [Collaboration](https://wellarchitected.github.com/library/collaboration/checklist/)
-  - [Application Security](https://wellarchitected.github.com/library/application-security/checklist/)
-  - [Governance](https://wellarchitected.github.com/library/governance/checklist/)
-  - [Architecture](https://wellarchitected.github.com/library/architecture/checklist/)
+- [Anti-Patterns](https://learn.github.com/well-architected/library/scenarios/anti-patterns/)
+- [Migrations](https://learn.github.com/well-architected/library/scenarios/migrations/)
+- [Monorepos](https://learn.github.com/well-architected/library/scenarios/monorepos/)
+- [GitHub Well-Architected Layers](https://learn.github.com/well-architected/library/overview/layers/)
+  - [Productivity](https://learn.github.com/well-architected/library/productivity/checklist/)
+  - [Collaboration](https://learn.github.com/well-architected/library/collaboration/checklist/)
+  - [Application Security](https://learn.github.com/well-architected/library/application-security/checklist/)
+  - [Governance](https://learn.github.com/well-architected/library/governance/checklist/)
+  - [Architecture](https://learn.github.com/well-architected/library/architecture/checklist/)
 - All Terraform modules should have unit and integration tests in the `test/` directory and should use the Terratest framework.
 - All unit tests should contain regular and edge cases.
 - Any Terraform objects that use GitHub Actions or GitHub API GraphQL queries should have a separate template for the GitHub Actions workflow or GraphQL query in the `workflows/` directory.

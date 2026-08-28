@@ -3,7 +3,7 @@
 # Addresses WAF Productivity pillar guidance on tracking Copilot KPIs and cost control.
 #
 # References:
-#   - https://wellarchitected.github.com/library/productivity/checklist/
+#   - https://learn.github.com/well-architected/library/productivity/checklist/
 #   - https://docs.github.com/en/rest/copilot/copilot-usage
 
 name: Copilot Usage Report
